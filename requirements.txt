@@ -4,3 +4,9 @@ duckdb
 openpyxl
 requests
 pyzipper
+gdown
+zipfile
+tempfile
+os
+shutil
+atexit
