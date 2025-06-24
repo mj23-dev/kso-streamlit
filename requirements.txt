@@ -5,6 +5,3 @@ openpyxl
 requests
 pyzipper
 gdown
-os
-shutil
-atexit
