@@ -7,14 +7,14 @@ import pandas as pd
 
 # --- Налаштування ---
 GDRIVE_FILE_ID = "1Is6lzxCWMr9b82peiSAOZ5eNGMa8QRFK"
-ZIP_PATH = "./PycharmProjects/kso/temp/db/kso.zip"
+ZIP_PATH = "kso.zip"
 
 st.set_page_config(page_title="KSO Viewer", layout="wide")
 st.title("📊 KSO Web Viewer (Streamlit + gdown)")
 
 # Створюємо тимчасову директорію
 # temp_dir = tempfile.mkdtemp()
-temp_dir = './PycharmProjects/kso/temp/db/'
+temp_dir = '.'
 
 if temp_dir and os.path.exists(temp_dir + 'kso.db'):
     # shutil.rmtree(temp_dir)
