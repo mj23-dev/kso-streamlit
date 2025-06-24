@@ -5,7 +5,6 @@ openpyxl
 requests
 pyzipper
 gdown
-tempfile
 os
 shutil
 atexit
