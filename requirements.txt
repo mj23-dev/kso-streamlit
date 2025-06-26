@@ -6,3 +6,4 @@ requests
 pyzipper
 gdown
 st_aggrid
+reflex_ag_grid
