@@ -126,7 +126,11 @@ selected_df = pd.DataFrame(selected)
 if len(selected_df) > 0:
     tab1, tab2 = st.tabs(["Personen", "Full details"])
     with tab1:
-        with st.spinner("⏬ Loading ..."):
+        with st.spinner("⏳ Loading ..."):
+            # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
+            placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
+
+            # 2. Spinner показується лише під час запиту
             selected_uns_id = selected_df.iloc[0]['uns_id']
             query = f"""
                 SELECT wlup.pers_id, wp.vorname, wp.nachname, 
@@ -143,7 +147,7 @@ if len(selected_df) > 0:
             df1 = conn.execute(query).fetchdf()
 
         # Поза межами spinner — вивід даних
-        st.dataframe(
+        placeholder.dataframe(
             df1,
             use_container_width=True,
             hide_index=True,
@@ -154,8 +158,12 @@ if len(selected_df) > 0:
             }
         )
     with tab2:
+        # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
+        placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
+
+        # 2. Spinner показується лише під час запиту
         selected_uns_id = selected_df.iloc[0]['uns_id']
-        with st.spinner("⏬ Loading..."):
+        with st.spinner("⏳ Loading..."):
             query = f"SELECT * FROM w_uns WHERE uns_id = '{selected_uns_id}'"
             df2 = conn.execute(query).fetchdf()
 
