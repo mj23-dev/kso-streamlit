@@ -3,10 +3,6 @@ from utils.db import connect_temp_duckdb
 from streamlit_option_menu import option_menu
 
 st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
-# menu = option_menu(None, ["Home", "Unternehmen", "Personen", 'Veranstaltungen', 'KSO-Management', 'Berichte'],
-#                         icons=['house', 'list-task', 'list-task', 'list-task','list-task'],
-#                         menu_icon="cast", default_index=0, orientation="horizontal",
-#                         styles={"container":{"max-width": "none"}})
 
 # === КРОК 1: Завантаження файлу бази ===
 st.title(":material/database: KSO DataWarehouse ⚡")
