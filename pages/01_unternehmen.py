@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+import time
 from datetime import datetime
 from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
@@ -129,6 +130,7 @@ if len(selected_df) > 0:
         with st.spinner("⏳ Loading ..."):
             # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
             placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
+            time.sleep(2)  # штучна пауза
 
             # 2. Spinner показується лише під час запиту
             selected_uns_id = selected_df.iloc[0]['uns_id']
@@ -146,20 +148,21 @@ if len(selected_df) > 0:
             """
             df1 = conn.execute(query).fetchdf()
 
-        # Поза межами spinner — вивід даних
-        placeholder.dataframe(
-            df1,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "pers_id": st.column_config.Column(width=50),
-                "uns_id": st.column_config.Column(width=50),
-                "email": st.column_config.Column(width="medium")
-            }
-        )
+            # Поза межами spinner — вивід даних
+            placeholder.dataframe(
+                df1,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "pers_id": st.column_config.Column(width=50),
+                    "uns_id": st.column_config.Column(width=50),
+                    "email": st.column_config.Column(width="medium")
+                }
+            )
     with tab2:
         # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
         placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
+        time.sleep(2)  # штучна пауза
 
         # 2. Spinner показується лише під час запиту
         selected_uns_id = selected_df.iloc[0]['uns_id']
@@ -175,12 +178,12 @@ if len(selected_df) > 0:
             )
             stacked["Value"] = stacked["Value"].astype(str)
 
-        st.dataframe(
-            stacked,
-            use_container_width=True,
-            hide_index=True,
-            column_config={
-                "Field": st.column_config.Column(width="small"),
-                "Value": st.column_config.Column(width="large")
-            }
-        )
+            placeholder.dataframe(
+                stacked,
+                use_container_width=True,
+                hide_index=True,
+                column_config={
+                    "Field": st.column_config.Column(width="small"),
+                    "Value": st.column_config.Column(width="large")
+                }
+            )
