@@ -126,31 +126,33 @@ selected_df = pd.DataFrame(selected)
 if len(selected_df) > 0:
     tab1, tab2 = st.tabs(["Personen", "Full details"])
     with tab1:
-        with st.spinner("⏬ Loading..."):
+        with st.spinner("⏬ Loading ..."):
             selected_uns_id = selected_df.iloc[0]['uns_id']
             query = f"""
-                        SELECT wlup.pers_id, wp.vorname, wp.nachname, 
-                                concat_ws('; ', wlup.email1, wlup.email2, wlup.email3, wlup.email4, wlup.email5) as email,
-                                wlup.pers_kategorie, wlup.pers_position,
-                                wp.anrede, wp.titel_vorne, wp.titel_hinten, 
-                                wu.uns_id
-                        FROM w_uns wu
-                        inner join main.w_links_uns_pers wlup on wu.uns_id = wlup.uns_id
-                        inner join main.w_pers wp on wlup.pers_id = wp.pers_id
-                        WHERE wu.uns_id = '{selected_uns_id}'
-                        ORDER BY 3,2
-                        """
+                SELECT wlup.pers_id, wp.vorname, wp.nachname, 
+                       concat_ws('; ', wlup.email1, wlup.email2, wlup.email3, wlup.email4, wlup.email5) as email,
+                       wlup.pers_kategorie, wlup.pers_position,
+                       wp.anrede, wp.titel_vorne, wp.titel_hinten, 
+                       wu.uns_id
+                FROM w_uns wu
+                INNER JOIN main.w_links_uns_pers wlup ON wu.uns_id = wlup.uns_id
+                INNER JOIN main.w_pers wp ON wlup.pers_id = wp.pers_id
+                WHERE wu.uns_id = '{selected_uns_id}'
+                ORDER BY 3,2
+            """
             df1 = conn.execute(query).fetchdf()
-            st.dataframe(
-                df1,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "pers_id": st.column_config.Column(width=50),
-                    "uns_id": st.column_config.Column(width=50),
-                    "email": st.column_config.Column(width="medium")
-                }
-            )
+
+        # Поза межами spinner — вивід даних
+        st.dataframe(
+            df1,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "pers_id": st.column_config.Column(width=50),
+                "uns_id": st.column_config.Column(width=50),
+                "email": st.column_config.Column(width="medium")
+            }
+        )
     with tab2:
         selected_uns_id = selected_df.iloc[0]['uns_id']
         with st.spinner("⏬ Loading..."):
@@ -165,12 +167,12 @@ if len(selected_df) > 0:
             )
             stacked["Value"] = stacked["Value"].astype(str)
 
-            st.dataframe(
-                stacked,
-                use_container_width=True,
-                hide_index=True,
-                column_config={
-                    "Field": st.column_config.Column(width="small"),
-                    "Value": st.column_config.Column(width="large")
-                }
-            )
+        st.dataframe(
+            stacked,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Field": st.column_config.Column(width="small"),
+                "Value": st.column_config.Column(width="large")
+            }
+        )
