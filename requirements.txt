@@ -5,5 +5,5 @@ openpyxl
 requests
 pyzipper
 gdown
-st_aggrid
+streamlit-aggrid
 reflex_ag_grid
