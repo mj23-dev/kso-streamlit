@@ -1,53 +1,24 @@
-import streamlit as st
-import duckdb
-import pandas as pd
-import tempfile
-import os
+import streamlit as st, duckdb, pandas as pd, tempfile, os
+from utils.db import connect_temp_duckdb
+from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="KSO Viewer", layout="wide")
-
-st.title("📂 KSO Viewer")
+st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
 
 # === КРОК 1: Завантаження файлу бази ===
-uploaded_file = st.file_uploader("Завантажте базу даних (kso.db)", type=["db"])
+st.title(":material/database: KSO DataWarehouse ⚡")
 
-if uploaded_file:
-    # === КРОК 2: Збереження у тимчасовий файл ===
-    with tempfile.NamedTemporaryFile(delete=False, suffix=".db") as tmp:
-        tmp.write(uploaded_file.read())
-        db_path = tmp.name
+st.header("To continue work with DB - please upload local database file 'kso_web.db':")
 
-    # === КРОК 3: Підключення до бази ===
-    try:
-        conn = duckdb.connect(db_path)
-        tables = conn.execute("SHOW TABLES").fetchall()
-        table_names = [t[0] for t in tables]
-    except Exception as e:
-        st.error(f"Помилка при підключенні до бази: {e}")
-        os.remove(db_path)
-        st.stop()
-
-    # === КРОК 4: Вибір таблиці та перегляд ===
-    st.sidebar.header("📋 Таблиці")
-    selected_table = st.sidebar.selectbox("Оберіть таблицю:", table_names)
-
-    df = conn.execute(f"SELECT * FROM {selected_table}").df()
-    st.markdown(f"### 🔎 Дані з таблиці `{selected_table}`")
-    st.dataframe(df, use_container_width=True)
-
-    # === КРОК 5: Експорт у CSV ===
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("⬇️ Експортувати у CSV", csv, file_name=f"{selected_table}.csv", mime="text/csv")
-
-    # === КРОК 6: Очищення після завершення ===
-    @st.cache_resource(show_spinner=False)
-    def cleanup_duckdb(path):
-        def _clean():
-            if os.path.exists(path):
-                os.remove(path)
-        return _clean
-
-    cleanup_duckdb(db_path)
-
+expander = st.expander("🔌 DB connection:", expanded=True)
+uploaded_file = expander.file_uploader("Upload database file (kso_web.db)", type=["db"])
+if not uploaded_file:
+    # st.warning("⬅️ Upload local database file 'kso.db'.")
+    st.stop()
 else:
-    st.info("👈 Завантажте локальний `.duckdb` файл для перегляду вмісту.")
+    pass
+
+# === КРОК 2: Підключення до тимчасового duckdb ===
+conn, db_path = connect_temp_duckdb(uploaded_file)
+
+st.session_state["conn"] = conn
+st.session_state["db_path"] = db_path
