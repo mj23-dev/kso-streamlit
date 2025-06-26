@@ -19,7 +19,7 @@ if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
 title = 'unternehmen'
-st.header("🏢 Unternehmen")
+st.header("🏢 Unternehmen v2")
 
 # === 1. Завантаження даних
 query = load_sql(f"{title}/sel_v_uns.sql")
@@ -31,7 +31,7 @@ cnt_filtered = len(df)
 col_left, col_center1, col_center2, col_right = st.columns([0.65, 0.15, 0.15, 0.15])
 with col_left:
     st.markdown("📋 Click checkbox to view details:")
-with col_center2:
+with col_right:
     if st.button("🔄 Reset filters", use_container_width=True):
         for key in ["name_filter", "selected_land", "selected_bundesland", "selected_form"]:
             if key in st.session_state:
@@ -45,39 +45,39 @@ with col_center2:
         st.rerun()
 
 # === 3. Фільтри ===
-expander = st.expander("Use advanced filters 👇", expanded=False)
-col1, col2, col3, col4, col5 = expander.columns([0.2, 0.2, 0.2, 0.2, 0.2])
-
-name_filter = col1.text_input("🔍 vollname_der_firma like '?'", key="name_filter", help='Like statement')
-if name_filter:
-    df = df[df["vollname_der_firma"].str.contains(name_filter, case=False, na=False)]
-    cnt_filtered = len(df)
-
-selected_land = col2.selectbox("🔍 Select Land", ['--All--'] + sorted(df['juradr_land'].dropna().unique()), key="selected_land")
-if selected_land != '--All--':
-    df = df[df['juradr_land'] == selected_land]
-    cnt_filtered = len(df)
-
-selected_bundesland = col2.selectbox("🔍 Select Bundesland", ['--All--'] + sorted(df['juradr_bundesland'].dropna().unique()), key="selected_bundesland")
-if selected_bundesland != '--All--':
-    df = df[df['juradr_bundesland'] == selected_bundesland]
-    cnt_filtered = len(df)
-
-selected_form = col3.selectbox("🔍 Select Rechtsform", ['--All--'] + sorted(df['rechtsform'].dropna().unique()), key="selected_form")
-if selected_form != '--All--':
-    df = df[df['rechtsform'] == selected_form]
-    cnt_filtered = len(df)
+# expander = st.expander("Use advanced filters 👇", expanded=False)
+# col1, col2, col3, col4, col5 = expander.columns([0.2, 0.2, 0.2, 0.2, 0.2])
+#
+# name_filter = col1.text_input("🔍 vollname_der_firma like '?'", key="name_filter", help='Like statement')
+# if name_filter:
+#     df = df[df["vollname_der_firma"].str.contains(name_filter, case=False, na=False)]
+#     cnt_filtered = len(df)
+#
+# selected_land = col2.selectbox("🔍 Select Land", ['--All--'] + sorted(df['juradr_land'].dropna().unique()), key="selected_land")
+# if selected_land != '--All--':
+#     df = df[df['juradr_land'] == selected_land]
+#     cnt_filtered = len(df)
+#
+# selected_bundesland = col2.selectbox("🔍 Select Bundesland", ['--All--'] + sorted(df['juradr_bundesland'].dropna().unique()), key="selected_bundesland")
+# if selected_bundesland != '--All--':
+#     df = df[df['juradr_bundesland'] == selected_bundesland]
+#     cnt_filtered = len(df)
+#
+# selected_form = col3.selectbox("🔍 Select Rechtsform", ['--All--'] + sorted(df['rechtsform'].dropna().unique()), key="selected_form")
+# if selected_form != '--All--':
+#     df = df[df['rechtsform'] == selected_form]
+#     cnt_filtered = len(df)
 
 # === 4. AgGrid відображення
 gb = GridOptionsBuilder.from_dataframe(df)
 gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=10) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
-gb.configure_side_bar(filters_panel=False, columns_panel=True) # Add a sidebar
+gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-# gb.configure_column(field='uns_id', header_name='uns', filter=ag_grid.filters.text, headerCheckboxSelection = True)
-# gb.configure_column(field='vollname_der_firma', header_name='Vollname', filter=ag_grid.filters.text)
-# gb.configure_columns(["uns_id", "vollname_der_firma"], filterParams={"buttons": ['apply', 'clear']})
+gb.configure_column(field='uns_id', header_name='uns', filter=ag_grid.filters.text, headerCheckboxSelection = True)
+gb.configure_column(field='vollname_der_firma', header_name='Vollname', filter=ag_grid.filters.text)
+gb.configure_columns(["uns_id", "vollname_der_firma"], filterParams={"buttons": ['apply', 'clear']})
 grid_options = gb.build()
 
 grid_response = AgGrid(
@@ -100,25 +100,25 @@ grid_response = AgGrid(
 )
 
 filtered_df = pd.DataFrame(grid_response['data'])
-# cnt_filtered = len(filtered_df)
+cnt_filtered = len(filtered_df)
 
-with col_center1:
-    st.markdown(f"📊 Records: {cnt_filtered}/{cnt_full}")
+# with col_center1:
+#     st.markdown(f"📊 Records: {cnt_filtered}/{cnt_full}")
 
 # === 5. Експорт
-with col_right:
-    file_exp = f"{title}_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-    # filtered_df.to_excel(file_exp, index=False)
-    df.to_excel(file_exp, index=False)
-    with open(file_exp, "rb") as f:
-        st.download_button(
-            label="⬇️ Export XLSX",
-            data=f,
-            file_name=file_exp,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            # help=f"Records: {len(filtered_df)}/{cnt_full}",
-            use_container_width=True
-        )
+# with col_right:
+#     file_exp = f"{title}_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+#     # filtered_df.to_excel(file_exp, index=False)
+#     df.to_excel(file_exp, index=False)
+#     with open(file_exp, "rb") as f:
+#         st.download_button(
+#             label="⬇️ Export XLSX",
+#             data=f,
+#             file_name=file_exp,
+#             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+#             # help=f"Records: {len(filtered_df)}/{cnt_full}",
+#             use_container_width=True
+#         )
 
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
