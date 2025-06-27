@@ -4,6 +4,7 @@ import time
 from datetime import datetime
 from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
+from st_aggrid.shared import JsCode
 from reflex_ag_grid import ag_grid
 
 # === Підключення до бази ===
@@ -71,14 +72,47 @@ with col_right:
 
 # === 4. AgGrid відображення
 gb = GridOptionsBuilder.from_dataframe(df)
+
+cell_renderer = JsCode("""
+                        function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+                        """)
+
 gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=10) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-gb.configure_column(field='uns_id', header_name='uns', filter=ag_grid.filters.text, headerCheckboxSelection = True)
+gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.text, headerCheckboxSelection = True)
 gb.configure_column(field='vollname_der_firma', header_name='Vollname', filter=ag_grid.filters.text)
-gb.configure_columns(["uns_id", "vollname_der_firma"], filterParams={"buttons": ['apply', 'clear']})
+gb.configure_column(field='juradr_land', header_name='Land', filter=ag_grid.filters.text)
+gb.configure_column(field='juradr_bundesland', header_name='Bundesland', filter=ag_grid.filters.text)
+gb.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.text)
+gb.configure_column(field='product_name_agg', header_name='Product', filter=ag_grid.filters.text)
+gb.configure_column(field='registrierungsstatus', header_name='Registrierungsstatus', filter=ag_grid.filters.text)
+gb.configure_column(field='akt_titel', header_name='Lasrt aktivitaten', filter=ag_grid.filters.text)
+gb.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.text)
+
+gb.configure_columns(["uns_id", "vollname_der_firma", "juradr_land", "juradr_bundesland", "rechtsform", "product_name_agg", "registrierungsstatus", "akt_titel", "heaf"], filterParams={"buttons": ['apply', 'clear']})
+gb.configure_column(
+    "seite",
+    headerName="link",
+    # width=100,
+    cellRenderer=JsCode("""
+        class UrlCellRenderer {
+          init(params) {
+            this.eGui = document.createElement('a');
+            this.eGui.innerText = params.value;
+            this.eGui.setAttribute('href', params.value);
+            this.eGui.setAttribute('style', "text-decoration:none");
+            this.eGui.setAttribute('target', "_blank");
+          }
+          getGui() {
+            return this.eGui;
+          }
+        }
+    """)
+)
+
 grid_options = gb.build()
 
 grid_response = AgGrid(
@@ -87,14 +121,13 @@ grid_response = AgGrid(
     enable_enterprise_modules=True,
     update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-    theme="blue",
-    # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    pagination_page_size_selector=[10, 20, 50, 100],
+    theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+    pagination_page_size_selector=[10, 20, 50, 100, 1000],
     height=375,
     width='100%',
     header_checkbox_selection_filtered_only=True,
-    show_toolbar=True,
-    show_search=False, show_download_button=False,
+    show_toolbar=True, show_search=False, show_download_button=False,
+    allow_unsafe_jscode=True,
     reload_data=True,
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
