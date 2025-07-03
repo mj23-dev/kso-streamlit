@@ -3,14 +3,15 @@
 Цей застосунок дозволяє переглядати дані з бази `kso.db` у зручному інтерфейсі Streamlit.
 
 ## 📁 Структура
-- `hauptseite.py` — головний файл
-- `pages/` — окремі сторінки (Unternehmen, Personen, ...)
+- `app.py` — головний файл
+- `_pages/` — окремі сторінки (Unternehmen, Personen, ...)
 - `sql/` — SQL-запити
 - `utils/` — допоміжні функції
+- `icon/` — іконки
 
 ## ⚠️ Увага
-База kso.db завантажується вручну на старті застосунку.
+База kso_web.db завантажується вручну на старті застосунку.
 
 ## 🚀 Запуск
 ```bash
-streamlit run hauptseite.py
+streamlit run app.py
