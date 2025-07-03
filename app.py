@@ -1,23 +1,30 @@
-import streamlit as st, duckdb, pandas as pd, tempfile, os
+import streamlit as st
+import duckdb, os
+import pandas as pd
+
 from utils.db import connect_temp_duckdb
 
-st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
+st.set_page_config(page_title="KSO-Db v1.0",
+                page_icon="icon/kso.png",
+                layout="wide")
 
-# === КРОК 1: Завантаження файлу бази ===
-st.title(":material/database: KSO DataWarehouse ⚡")
+pages = {
+    "🏠 Startseite": [st.Page("hauptseite.py", title="🛠️ Set database")],
+    "🏢 Unternehmen": [
+        st.Page("_pages/unternehmen/unternehmen01.py", title="📁 Unternehmen v1"),
+        st.Page("_pages/unternehmen/unternehmen02.py", title="📂 Unternehmen v2"),
+        st.Page("_pages/unternehmen/product01.py", title="💶 Products"),
+    ],
+    "🧑‍💼 Personen": [
+        st.Page("_pages/personen/personen01.py", title="👤 Personen"),
+    ],
+    "📅 Veranstaltungen": [
+        st.Page("_pages/veranstaltungen/veranstaltungen01.py", title="🪪 Page 1"),
+    ],
+    "📊 Berichte": [
+        st.Page("_pages/berichte/berichte01.py", title="📈 Page 1"),
+    ],
+}
 
-st.header("To continue work with DB - please upload local database file 'kso_web.db':")
-
-expander = st.expander("🔌 DB connection:", expanded=True)
-uploaded_file = expander.file_uploader("Upload database file (kso_web.db)", type=["db"])
-if not uploaded_file:
-    # st.warning("⬅️ Upload local database file 'kso.db'.")
-    st.stop()
-else:
-    pass
-
-# === КРОК 2: Підключення до тимчасового duckdb ===
-conn, db_path = connect_temp_duckdb(uploaded_file)
-
-st.session_state["conn"] = conn
-st.session_state["db_path"] = db_path
+pg = st.navigation(pages, position="top")
+pg.run()
