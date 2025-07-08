@@ -5,7 +5,5 @@ openpyxl
 requests
 pyzipper
 gdown
-tempfile
-os
-shutil
-atexit
+streamlit-aggrid
+reflex_ag_grid
