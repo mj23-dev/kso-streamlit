@@ -74,8 +74,8 @@ gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid
 gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200, rowGroup=True, hide=True)
 gb.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100, hide=True)
 gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.multi, aggFunc="sum", sort='desc', width=120)
-gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='vollname_der_firma', header_name='Full Name', filter=ag_grid.filters.multi, width=250)
+gb.configure_column(field='vollname_der_firma', header_name='Full Name', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500, flex=0)
+gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi, minWidth=120, maxWidth=120, flex=0)
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number)
 gb.configure_column(
     "seite",
@@ -122,7 +122,12 @@ grid_options = gb.build()
 grid_options["groupDefaultExpanded"]= 1   # expand all
 # Додаємо авто-групувальну колонку з чекбоксами ТІЛЬКИ для leaf-рядків
 grid_options["autoGroupColumnDef"] = {
-    "headerName": "Group",
+    "headerName": "ONACE",
+    "field": "onace_sh_de5",  # поле, яке ти вказав у `rowGroup`
+    "minWidth": 300,
+    "width": 400,
+    "maxWidth": 500,
+    "pinned": 'left',
     "cellRendererParams": {
         "checkbox": True,
         "suppressCount": False,

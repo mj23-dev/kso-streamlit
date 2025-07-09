@@ -69,8 +69,8 @@ gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=T
 
 gb.configure_column(field='product_name', header_name='Product Compass', filter=ag_grid.filters.multi, width=250, rowGroup=True, hide=True)
 gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.multi, aggFunc="sum", sort='desc', width=120)
-gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='vollname_der_firma', header_name='Full Name', filter=ag_grid.filters.multi, width=500)
+gb.configure_column(field='vollname_der_firma', header_name='Full Name', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
+gb.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, minWidth=120, maxWidth=120)
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number)
 gb.configure_column(
     "seite",
@@ -124,7 +124,12 @@ grid_options["animateRows"]=True
 
 # Додаємо авто-групувальну колонку з чекбоксами ТІЛЬКИ для leaf-рядків
 grid_options["autoGroupColumnDef"] = {
-    "headerName": "Group",
+    "headerName": "Product Compass",
+    "field": "product_name",  # поле, яке ти вказав у `rowGroup`
+    "minWidth": 300,
+    "width": 300,
+    "maxWidth": 400,
+    "pinned": 'left',
     "cellRendererParams": {
         "checkbox": True,
         "suppressCount": False,
@@ -140,7 +145,7 @@ grid_response = AgGrid(
     update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    pagination_page_size_selector=[10, 20, 50, 100, 1000],
+    pagination_page_size_selector=[20, 50, 100],
     height=430,
     width='100%',
     header_checkbox_selection_filtered_only=True,
