@@ -5,7 +5,7 @@ import pandas as pd
 from utils.db import connect_temp_duckdb
 
 st.set_page_config(page_title="KSO-Db v1.0",
-                page_icon="PycharmProjects/kso_streamlit/icon/kso.png",
+                page_icon="icon/kso.png",
                 layout="wide")
 
 pages = {
@@ -19,7 +19,7 @@ pages = {
         st.Page("_pages/unternehmen/u-product.py", title="💶 Products"),
     ],
     "🧑🏻‍💼Personen": [
-        st.Page("_pages/personen/personen01.py", title="📰 Profile"),
+        st.Page("_pages/personen/p-profile.py", title="📰 Profile"),
     ],
     "📅 Veranstaltungen": [
         st.Page("_pages/veranstaltungen/v-profile.py", title="🪪 Profile"),

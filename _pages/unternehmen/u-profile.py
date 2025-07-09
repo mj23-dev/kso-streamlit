@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
-import time
+import time, io, base64
+import streamlit.components.v1 as components
 from datetime import datetime
 from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
@@ -38,18 +39,12 @@ cnt_full = len(df)
 cnt_filtered = len(df)
 
 # === 2. Обробка Reset Filters ===
-col_left, col_center1, col_center2, col_right = st.columns([0.65, 0.15, 0.15, 0.15])
+# col_left, col_center1, col_center2, col_right = st.columns([0.65, 0.15, 0.15, 0.15])
+col_left, col_center1, col_right = st.columns([0.55, 0.15, 0.25])
 with col_left:
     st.markdown("✔️ Click checkbox to view details:")
 with col_center1:
     if st.button("🔄 Reset filters", use_container_width=True):
-        for key in ["name_filter", "selected_land", "selected_bundesland", "selected_form"]:
-            if key in st.session_state:
-                del st.session_state[key]
-        st.session_state["name_filter"] = ""
-        st.session_state["selected_land"] = "--All--"
-        st.session_state["selected_bundesland"] = "--All--"
-        st.session_state["selected_form"] = "--All--"
         st.session_state["reload_grid"] = True
         st.session_state["reset_grid_key"] = f"grid_{datetime.now().timestamp()}"
         st.rerun()
@@ -139,34 +134,81 @@ filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
 
 # === 5. Експорт
-with col_center2:
-    file_exp = f"{title}_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-    filtered_df.to_excel(file_exp, index=False)
-    with open(file_exp, "rb") as f:
-        st.download_button(
-            label="Uns.xls",
-            data=f,
-            file_name=file_exp,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            # help=f"Records: {len(filtered_df)}/{cnt_full}",
-            use_container_width=True,
-            icon=":material/download:"
-        )
-
 with col_right:
-    file_exp = f"{title}_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-    merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
-    merged_df.to_excel(file_exp, index=False)
-    with open(file_exp, "rb") as f:
-        st.download_button(
-            label="Uns+Pers.xls",
-            data=f,
-            file_name=file_exp,
-            mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-            # help=f"Records: {len(filtered_df)}/{cnt_full}",
-            use_container_width=True,
-            icon=":material/download:"
-        )
+    with st.popover("⬇️ Export XLS", use_container_width=True):
+        col_left_exp, col_right_exp = st.columns([0.5,0.5])
+        with col_left_exp:
+            if st.button("🔄 Uns.xls", use_container_width=True):
+                file_exp1 = f"{title}_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+                towrite = io.BytesIO()
+                filtered_df.to_excel(towrite, index=False, engine='openpyxl')
+                towrite.seek(0)
+                data1 = towrite.read()
+                b64 = base64.b64encode(data1).decode()
+                st.session_state['excel_file_name1'] = file_exp1
+                st.session_state['excel_file_data1'] = b64
+
+            if 'excel_file_name1' in st.session_state and 'excel_file_data1' in st.session_state:
+                # Генеруємо HTML-кнопку з JS, яка ховається після кліку
+                download_html1 = f"""
+                <html>
+                <head>
+                <script>
+                function hideButton() {{
+                    var btn = document.getElementById('download-btn1');
+                    btn.style.display = 'none';
+                }}
+                </script>
+                </head>
+                <body>
+                <a id="download-btn1" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data1']}" 
+                   download="{file_exp1}" 
+                   onclick="hideButton()"
+                   style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
+                   ⬇️ Download
+                </a>
+                </body>
+                </html>
+                """
+                components.html(download_html1, height=50, width=190)
+                if 'excel_file_name1' in st.session_state:
+                    del st.session_state['excel_file_name1']
+        with col_right_exp:
+            file_exp2 = f"{title}_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            if st.button("🔄 Uns+Pers.xls", use_container_width=True):
+                merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
+                towrite = io.BytesIO()
+                merged_df.to_excel(towrite, index=False, engine='openpyxl')
+                towrite.seek(0)
+                data2 = towrite.read()
+                b64 = base64.b64encode(data2).decode()
+                st.session_state['excel_file_name2'] = file_exp2
+                st.session_state['excel_file_data2'] = b64
+            if 'excel_file_name2' in st.session_state and 'excel_file_data2' in st.session_state:
+                # Генеруємо HTML-кнопку з JS, яка ховається після кліку
+                download_html2 = f"""
+                    <html>
+                    <head>
+                    <script>
+                    function hideButton() {{
+                        var btn = document.getElementById('download-btn2');
+                        btn.style.display = 'none';
+                    }}
+                    </script>
+                    </head>
+                    <body>
+                    <a id="download-btn2" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data2']}" 
+                       download="{file_exp2}" 
+                       onclick="hideButton()"
+                       style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
+                       ⬇️ Download
+                    </a>
+                    </body>
+                    </html>
+                    """
+                components.html(download_html2, height=50, width=190)
+                if 'excel_file_name2' in st.session_state:
+                    del st.session_state['excel_file_name2']
 
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
@@ -185,13 +227,13 @@ if len(selected_df) > 0:
         expander = st.expander(f"**ONACE:** {selected_df.iloc[0]['onace_sh_de5']} ({selected_df.iloc[0]['onace_code5']})", expanded=False)
         col_onace1, col_onace2, col_onace3, col_onace4 = expander.columns([0.25, 0.25, 0.25, 0.25])
         with col_onace1:
-            st.write(f"1️⃣{selected_df.iloc[0]['onace_sh_de1']}")
+            st.write(f"1️⃣{selected_df.iloc[0]['onace_sh_de1']} ({selected_df.iloc[0]['onace_code5'][0:1]})")
         with col_onace2:
-            st.write(f"2️⃣{selected_df.iloc[0]['onace_sh_de2']}")
+            st.write(f"2️⃣{selected_df.iloc[0]['onace_sh_de2']} ({selected_df.iloc[0]['onace_code5'][0:3]})")
         with col_onace3:
-            st.write(f"3️⃣{selected_df.iloc[0]['onace_sh_de3']}")
+            st.write(f"3️⃣{selected_df.iloc[0]['onace_sh_de3']} ({selected_df.iloc[0]['onace_code5'][0:5]})")
         with col_onace4:
-            st.write(f"4️⃣{selected_df.iloc[0]['onace_sh_de4']}")
+            st.write(f"4️⃣{selected_df.iloc[0]['onace_sh_de4']} ({selected_df.iloc[0]['onace_code5'][0:6]})")
 
     if selected_df.iloc[0]['product_name_agg'] and selected_df.iloc[0]['tatigkeitsbeschreibung']:
         col_prod, col_comm = st.columns([0.5, 0.5])
