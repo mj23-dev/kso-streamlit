@@ -59,7 +59,12 @@ cell_renderer = JsCode("""
 gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
-gb.configure_selection(selection_mode="single", use_checkbox=False) # Enable single selection (multiple)
+gb.configure_selection(
+    selection_mode="single",
+    use_checkbox=True,
+    pre_selected_rows=[],
+)
+# gb.configure_selection(selection_mode="single", use_checkbox=False) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
 gb.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=ag_grid.filters.multi, width=200, rowGroup=True, hide=True)
@@ -112,10 +117,19 @@ gb.configure_column(field='registrierungsstatus', header_name='Status', filter=a
 gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
 
 grid_options = gb.build()
-grid_options["autoGroupColumnDef"]= {'cellRendererParams': {'checkbox': True }}
-grid_options["treeData"]=True
-grid_options["animateRows"]=True
+# grid_options["autoGroupColumnDef"]= {'cellRendererParams': {'checkbox': True }}
+# grid_options["animateRows"]=True
 grid_options["groupDefaultExpanded"]= 1   # expand all
+# Додаємо авто-групувальну колонку з чекбоксами ТІЛЬКИ для leaf-рядків
+grid_options["autoGroupColumnDef"] = {
+    "headerName": "Group",
+    "cellRendererParams": {
+        "checkbox": True,
+        "suppressCount": False,
+        "suppressDoubleClickExpand": False,
+        "suppressEnterExpand": False
+    }
+}
 
 grid_response = AgGrid(
     df,
