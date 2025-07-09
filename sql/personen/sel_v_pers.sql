@@ -1,1 +1,0 @@
-select * from main.w_pers t

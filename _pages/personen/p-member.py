@@ -21,7 +21,7 @@ if "reload_grid" in st.session_state:
 if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
-title = 'unternehmen'
+title = 'personen'
 st.subheader("💰 Members (Mitglieder)")
 
 # === 1. Завантаження даних
@@ -62,61 +62,34 @@ gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-gb.configure_column(field='vollname_der_firma', header_name='Full Name', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
+gb.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True, width=150)
+gb.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi, width=150)
 gb.configure_column(field='datum_von', header_name='Dat Von', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=120)
 gb.configure_column(field='datum_bis', header_name='Dat Bis', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=120)
 gb.configure_column(field='cnt_mtg', header_name='Cnt Mtg', filter=ag_grid.filters.number, width=100)
 gb.configure_column(field='rn_mtg', header_name='Rn Mtg', filter=ag_grid.filters.number, width=100)
-gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi)
-gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number, width=100)
-gb.configure_column(
-    "seite",
-    headerName="Link",
-    width=200,
-    cellRenderer=JsCode("""
-        class UrlCellRenderer {
-          init(params) {
-            this.eGui = document.createElement('a');
-            this.eGui.innerText = params.value;
-            this.eGui.setAttribute('href', params.value);
-            this.eGui.setAttribute('style', "text-decoration:none");
-            this.eGui.setAttribute('target', "_blank");
-          }
-          getGui() {
-            return this.eGui;
-          }
-        }
-    """)
-)
-gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, width=140)
+gb.configure_column(field='anrede', header_name='Anrede', filter=ag_grid.filters.multi)
+gb.configure_column(field='titel_vorne', header_name='Titel Vorne', filter=ag_grid.filters.multi)
+gb.configure_column(field='titel_hinten', header_name='Titel Hinten', filter=ag_grid.filters.multi)
 gb.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_land', header_name='Land Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_bundesland', header_name='Bundesland Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_plz_ort', header_name='Plz-Ort Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_land', header_name='Land Rechn', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland Rechn', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort Rechn', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.multi)
-gb.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100)
-gb.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de2', header_name='ONACE L2', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='product_name_agg', header_name='Product Compass', filter=ag_grid.filters.multi)
-gb.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=ag_grid.filters.multi, width=300)
-gb.configure_column(field='uns_mitg', header_name='Uns Mtg', filter=ag_grid.filters.number, width=100)
-gb.configure_column(field='uns_mitg_maxd', header_name='Lst Mtg Date', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
-gb.configure_column(field='aktivitaten_id', header_name='Lst Akt ID', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi)
+gb.configure_column(field='geburtsdatum', header_name='Geburtsdatum', type=["customDateTimeFormat"],custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date)
+gb.configure_column(field='sprachen', header_name='Sprachen', filter=ag_grid.filters.multi)
+gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='rechnungs_email', header_name='RchnEmail', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='domain', header_name='Domain', filter=ag_grid.filters.multi, width=150)
+
+gb.configure_column(field='juradr_land', header_name='Land', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='juradr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='adr_plz_ort', header_name='Plz-Ort', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='strasse', header_name='Strasse', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='juradr_full', header_name='Address', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='akt_maxd', header_name='Lst Akt Date', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
-gb.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, width=80)
-gb.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='juradr_full', header_name='Address Jur', filter=ag_grid.filters.multi)
-gb.configure_column(field='rechnungsadr_full', header_name='Address Rechn', filter=ag_grid.filters.multi)
-gb.configure_column(field='kurzbezeichnung', header_name='Short Name', filter=ag_grid.filters.multi)
-gb.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi, width=100)
-gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
+gb.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
+gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.number, width=100)
+gb.configure_column(field='vollname_der_firma_aggr', header_name='Uns Full Name', filter=ag_grid.filters.multi)
+gb.configure_column(field='kurzbezeichnung_aggr', header_name='Uns Short Name', filter=ag_grid.filters.multi)
 
 grid_options = gb.build()
 
@@ -127,7 +100,7 @@ grid_response = AgGrid(
     update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    pagination_page_size_selector=[10, 20, 50, 100, 1000],
+    pagination_page_size_selector=[20, 50, 100],
     height=375,
     width='100%',
     header_checkbox_selection_filtered_only=True,
@@ -146,8 +119,8 @@ with col_right:
     with st.popover("⬇️ Export XLS", use_container_width=True):
         col_left_exp, col_right_exp = st.columns([0.5,0.5])
         with col_left_exp:
-            if st.button("🔄 Uns.xls", use_container_width=True):
-                file_exp1 = "mitglieder_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            if st.button("🔄 Pers.xls", use_container_width=True):
+                file_exp1 = f"mitglieder_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
                 towrite = io.BytesIO()
                 filtered_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)
@@ -182,9 +155,12 @@ with col_right:
                 if 'excel_file_name1' in st.session_state:
                     del st.session_state['excel_file_name1']
         with col_right_exp:
-            file_exp2 = f"mitglieder_uns_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-            if st.button("🔄 Uns+Pers.xls", use_container_width=True):
-                merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
+            file_exp2 = f"mitglieder_pers_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            if st.button("🔄 Pers+Uns.xls", use_container_width=True):
+                merged_df = pd.merge(filtered_df, df_pers, on='pers_id', how='left')
+                insert_after_column = 'kurzbezeichnung_aggr' # додаємо нову колонку після
+                col_index = merged_df.columns.get_loc(insert_after_column)
+                merged_df.insert(col_index + 1, 'dtype', 'UnsLinked ->')
                 towrite = io.BytesIO()
                 merged_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)
@@ -223,73 +199,79 @@ selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
 if len(selected_df) > 0:
 
-    placeholder_col = st.empty()
-    col_adr, col_form = placeholder_col.columns([0.5, 0.5])
-    with col_adr:
-        st.markdown(f"🔸**Address:** {selected_df.iloc[0]['rechnungsadr_full']}")
-    with col_form:
-        if selected_df.iloc[0]['rechtsform']:
-            st.markdown(f"🔸**Rechtsform:** {selected_df.iloc[0]['rechtsform']}")
+    # placeholder_col = st.empty()
+    # col_adr, col_form = placeholder_col.columns([0.5, 0.5])
+    # with col_adr:
+    #     st.markdown(f"🔸**Address:** {selected_df.iloc[0]['rechnungsadr_full']}")
+    # with col_form:
+    #     if selected_df.iloc[0]['rechtsform']:
+    #         st.markdown(f"🔸**Rechtsform:** {selected_df.iloc[0]['rechtsform']}")
+    #
+    # if selected_df.iloc[0]['onace_code5']:
+    #     expander = st.expander(f"**ONACE:** {selected_df.iloc[0]['onace_sh_de5']} ({selected_df.iloc[0]['onace_code5']})", expanded=False)
+    #     col_onace1, col_onace2, col_onace3, col_onace4 = expander.columns([0.25, 0.25, 0.25, 0.25])
+    #     with col_onace1:
+    #         st.write(f"1️⃣{selected_df.iloc[0]['onace_sh_de1']} ({selected_df.iloc[0]['onace_code5'][0:1]})")
+    #     with col_onace2:
+    #         st.write(f"2️⃣{selected_df.iloc[0]['onace_sh_de2']} ({selected_df.iloc[0]['onace_code5'][0:3]})")
+    #     with col_onace3:
+    #         st.write(f"3️⃣{selected_df.iloc[0]['onace_sh_de3']} ({selected_df.iloc[0]['onace_code5'][0:5]})")
+    #     with col_onace4:
+    #         st.write(f"4️⃣{selected_df.iloc[0]['onace_sh_de4']} ({selected_df.iloc[0]['onace_code5'][0:6]})")
+    #
+    # if selected_df.iloc[0]['product_name_agg'] and selected_df.iloc[0]['tatigkeitsbeschreibung']:
+    #     col_prod, col_comm = st.columns([0.5, 0.5])
+    # elif selected_df.iloc[0]['product_name_agg']:
+    #     col_prod = st.empty()
+    # elif selected_df.iloc[0]['tatigkeitsbeschreibung']:
+    #     col_comm = st.empty()
+    #
+    # # col_prod, col_comm = st.columns([0.5, 0.5])
+    # try:
+    #     with col_prod:
+    #         if selected_df.iloc[0]['product_name_agg']:
+    #             expander = col_prod.expander(f"**Products and Services:** {selected_df.iloc[0]['product_name_agg'].split('|')[0]} ... ↩️", expanded=False)
+    #             expander.write(f"{selected_df.iloc[0]['product_name_agg']}")
+    #         else:
+    #             expander = col_prod.expander("**Products and Services:** ❌", expanded=False)
+    #             expander.write(f"")
+    # except:
+    #     pass
+    #
+    # try:
+    #     with col_comm:
+    #         if selected_df.iloc[0]['tatigkeitsbeschreibung']:
+    #             expander = col_comm.expander(f"**Tatigkeitsbeschreibung:** {selected_df.iloc[0]['tatigkeitsbeschreibung'][0:75]}... ↩️", expanded=False)
+    #             expander.write(f"{selected_df.iloc[0]['tatigkeitsbeschreibung']}")
+    # except:
+    #     pass
 
-    if selected_df.iloc[0]['onace_code5']:
-        expander = st.expander(f"**ONACE:** {selected_df.iloc[0]['onace_sh_de5']} ({selected_df.iloc[0]['onace_code5']})", expanded=False)
-        col_onace1, col_onace2, col_onace3, col_onace4 = expander.columns([0.25, 0.25, 0.25, 0.25])
-        with col_onace1:
-            st.write(f"1️⃣{selected_df.iloc[0]['onace_sh_de1']} ({selected_df.iloc[0]['onace_code5'][0:1]})")
-        with col_onace2:
-            st.write(f"2️⃣{selected_df.iloc[0]['onace_sh_de2']} ({selected_df.iloc[0]['onace_code5'][0:3]})")
-        with col_onace3:
-            st.write(f"3️⃣{selected_df.iloc[0]['onace_sh_de3']} ({selected_df.iloc[0]['onace_code5'][0:5]})")
-        with col_onace4:
-            st.write(f"4️⃣{selected_df.iloc[0]['onace_sh_de4']} ({selected_df.iloc[0]['onace_code5'][0:6]})")
-
-    if selected_df.iloc[0]['product_name_agg'] and selected_df.iloc[0]['tatigkeitsbeschreibung']:
-        col_prod, col_comm = st.columns([0.5, 0.5])
-    elif selected_df.iloc[0]['product_name_agg']:
-        col_prod = st.empty()
-    elif selected_df.iloc[0]['tatigkeitsbeschreibung']:
-        col_comm = st.empty()
-
-    # col_prod, col_comm = st.columns([0.5, 0.5])
-    try:
-        with col_prod:
-            if selected_df.iloc[0]['product_name_agg']:
-                expander = col_prod.expander(f"**Products and Services:** {selected_df.iloc[0]['product_name_agg'].split('|')[0]} ... ↩️", expanded=False)
-                expander.write(f"{selected_df.iloc[0]['product_name_agg']}")
-            else:
-                expander = col_prod.expander("**Products and Services:** ❌", expanded=False)
-                expander.write(f"")
-    except:
-        pass
-
-    try:
-        with col_comm:
-            if selected_df.iloc[0]['tatigkeitsbeschreibung']:
-                expander = col_comm.expander(f"**Tatigkeitsbeschreibung:** {selected_df.iloc[0]['tatigkeitsbeschreibung'][0:75]}... ↩️", expanded=False)
-                expander.write(f"{selected_df.iloc[0]['tatigkeitsbeschreibung']}")
-    except:
-        pass
-
-    st.markdown("🔸**Other details:**")
+    st.markdown("🔸**Details:**")
     with st.spinner("⏳ Loading ..."):
         # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
         placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
         time.sleep(2)  # штучна пауза
 
         # 2. Наповнюємо вкладки
-        selected_uns_id = selected_df.iloc[0]['uns_id']
+        selected_pers_id = selected_df.iloc[0]['pers_id']
 
         query = f"""
-                    SELECT wlup.pers_id, wp.vorname, wp.nachname, 
-                           concat_ws('; ', wlup.email1, wlup.email2, wlup.email3, wlup.email4, wlup.email5) as email,
-                           wlup.pers_kategorie, wlup.pers_position, wp.telefonnummer, 
-                           wp.pers_mitg, wp.pers_mitg_maxd, wp.aktivitaten_id, wp.akt_titel, wp.akt_maxd,
-                           wu.kurzbezeichnung, wu.uns_id
-                    FROM w_uns wu
-                    INNER JOIN main.w_links_uns_pers wlup ON wu.uns_id = wlup.uns_id
-                    INNER JOIN main.w_pers wp ON wlup.pers_id = wp.pers_id
-                    WHERE wu.uns_id = '{selected_uns_id}'
-                    ORDER BY 3,2
+                    SELECT distinct 
+                            wu.vollname_der_firma, wlup.pers_position, wu.uns_id, 
+                            case when wu.seite not like 'http%' and wu.seite not like 'www%' then null else wu.seite end as seite, 
+                            wu.email, wu.telefonnummer, 
+                            wu.rechnungsadr_land, wu.rechnungsadr_bundesland, wu.rechnungsadr_plz_ort, 
+                            wu.rechtsform, 
+                            wu.code5 as onace_code5, wu.onace_sh_de1, wu.onace_sh_de2, wu.onace_sh_de3, wu.onace_sh_de4, wu.onace_sh_de5,
+                            wu.product_name_agg, wu.tatigkeitsbeschreibung,
+                            wu.uns_mitg, wu.uns_mitg_maxd, wu.aktivitaten_id, wu.akt_titel, wu.akt_maxd,
+                            wu.heaf, wu.hauptunternehmen_id, wu.kurzbezeichnung, wu.rechnungsadr_full, wu.registrierungsstatus, wu.compass_id,
+                            wp.pers_id
+                    FROM main.w_pers wp
+                    INNER join main.w_links_uns_pers wlup on wlup.pers_id = wp.pers_id
+                    INNER join main.w_uns wu on wu.uns_id = wlup.uns_id
+                    WHERE wp.pers_id = '{selected_pers_id}'
+                    ORDER BY 1,2
                     """
         df1 = conn.execute(query).fetchdf()
 
@@ -303,7 +285,7 @@ if len(selected_df) > 0:
                                         wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
                             ) wv
                     INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
-                    WHERE wv2.uns_id = '{selected_uns_id}'
+                    WHERE wv2.pers_id = '{selected_pers_id}'
                     ORDER BY 1 desc
                     """
         df2 = conn.execute(query).fetchdf()
@@ -317,31 +299,79 @@ if len(selected_df) > 0:
                 df1[col] = df1[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
             # формуємо датафрейм
             gb1 = GridOptionsBuilder.from_dataframe(df1)
+
+            cell_renderer = JsCode("""
+                                    function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
+                                    """)
+
             gb1.configure_pagination(enabled=True, paginationAutoPageSize=False,
-                                     paginationPageSize=100)  # Add pagination
+                                    paginationPageSize=5000)  # Add pagination
+            # gb1.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
             gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
-            # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
-            gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi,
-                                 maxWidth=150)
-            gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi,
-                                 maxWidth=150)
-            gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
-            gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
-            gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, maxWidth=150)
-            gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-            gb1.configure_column(field='pers_mitg', header_name='Mtg', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='pers_mitg_maxd', header_name='Mtg MaxDatum',
-                                 type=["customDateTimeFormat"],
-                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, maxWidth=120)
-            gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
-            gb1.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi, minWidth=200)
+            gb1.configure_selection(selection_mode="single")  # Enable single selection (multiple)
+            gb1.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+
+            gb1.configure_column(field='vollname_der_firma', header_name='Full Name', pinned='left',
+                                filter=ag_grid.filters.multi)
+            gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi)
+            gb1.configure_column(
+                "seite",
+                headerName="Link",
+                width=200,
+                cellRenderer=JsCode("""
+                    class UrlCellRenderer {
+                      init(params) {
+                        this.eGui = document.createElement('a');
+                        this.eGui.innerText = params.value;
+                        this.eGui.setAttribute('href', params.value);
+                        this.eGui.setAttribute('style', "text-decoration:none");
+                        this.eGui.setAttribute('target', "_blank");
+                      }
+                      getGui() {
+                        return this.eGui;
+                      }
+                    }
+                """)
+            )
+            gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi,
+                                width=150)
+            gb1.configure_column(field='rechnungsadr_land', header_name='Land', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi,
+                                width=200)
+            gb1.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort', filter=ag_grid.filters.multi,
+                                width=200)
+            gb1.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100)
+            gb1.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='onace_sh_de2', header_name='ONACE L2', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
+            gb1.configure_column(field='product_name_agg', header_name='Product Compass', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung',
+                                filter=ag_grid.filters.multi, width=300)
+            gb1.configure_column(field='uns_mitg', header_name='Uns Mtg', filter=ag_grid.filters.number, width=100)
+            gb1.configure_column(field='uns_mitg_maxd', header_name='Lst Mtg Date', type=["customDateTimeFormat"],
+                                custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
+            gb1.configure_column(field='aktivitaten_id', header_name='Lst Akt ID', filter=ag_grid.filters.multi,
+                                width=120)
+            gb1.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi)
             gb1.configure_column(field='akt_maxd', header_name='Lst Akt Date', type=["customDateTimeFormat"],
                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
-            gb1.configure_column(field='kurzbezeichnung', header_name='Short Name', filter=ag_grid.filters.multi, width=300)
-            gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
+            gb1.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, width=80)
+            gb1.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=ag_grid.filters.multi,
+                                width=120)
+            gb1.configure_column(field='rechnungsadr_full', header_name='Address', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='kurzbezeichnung', header_name='Short Name', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi,
+                                width=100)
+            gb1.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
+            gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, width=120)
 
             grid_options1 = gb1.build()
+
             grid_response1 = AgGrid(
                 df1,
                 gridOptions=grid_options1,
@@ -350,9 +380,10 @@ if len(selected_df) > 0:
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="blue",
                 # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-                pagination_page_size_selector=[10, 20, 50, 100],
-                height=dfheight1,  # = 7 rows
+                pagination_page_size_selector=[20, 50, 100],
+                height=dfheight1,
                 width='100%',
+                header_checkbox_selection_filtered_only=True,
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
                 reload_data=True,
@@ -409,26 +440,3 @@ if len(selected_df) > 0:
                 reload_data=True,
                 fit_columns_on_grid_load=True,
             )
-
-        # with tab2:
-        #     selected_uns_id = selected_df.iloc[0]['uns_id']
-        #     query = f"SELECT * FROM w_uns WHERE uns_id = '{selected_uns_id}'"
-        #     df2 = conn.execute(query).fetchdf()
-        #
-        #     stacked = (
-        #         df2.stack()
-        #         .reset_index()
-        #         .rename(columns={"level_1": "Field", 0: "Value"})
-        #         .drop(columns=["level_0"])
-        #     )
-        #     stacked["Value"] = stacked["Value"].astype(str)
-        #
-        #     st.dataframe(
-        #         stacked,
-        #         use_container_width=True,
-        #         hide_index=True,
-        #         column_config={
-        #             "Field": st.column_config.Column(width="small"),
-        #             "Value": st.column_config.Column(width="large")
-        #         }
-        #     )

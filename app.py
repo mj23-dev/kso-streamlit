@@ -14,12 +14,12 @@ pages = {
         # st.Page("_pages/unternehmen/unternehmen01.py", title="📁 Unternehmen v1"),
         st.Page("_pages/unternehmen/u-profile.py", title="📰 Profile"),
         st.Page("_pages/unternehmen/u-member.py", title="💰 Mitglieder"),
-        st.Page("_pages/unternehmen/u-person.py", title="👥 Personen"),
         st.Page("_pages/unternehmen/u-onace.py", title="🎯 ONACE"),
         st.Page("_pages/unternehmen/u-product.py", title="💶 Products"),
     ],
     "🧑🏻‍💼Personen": [
         st.Page("_pages/personen/p-profile.py", title="📰 Profile"),
+        st.Page("_pages/personen/p-member.py", title="💰 Mitglieder"),
     ],
     "📅 Veranstaltungen": [
         st.Page("_pages/veranstaltungen/v-profile.py", title="🪪 Profile"),

@@ -25,7 +25,7 @@ title = 'unternehmen'
 st.subheader("🏢 Сompanies (Unternehmen)")
 
 # === 1. Завантаження даних
-query = load_sql(f"{title}/sel_v_uns.sql")
+query = load_sql(f"{title}/sel_profile.sql")
 df = conn.execute(query).fetchdf()
 # обробляємо пусті дати
 for col in df.select_dtypes(include=['datetime']):
@@ -177,6 +177,9 @@ with col_right:
             file_exp2 = f"{title}_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
             if st.button("🔄 Uns+Pers.xls", use_container_width=True):
                 merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
+                insert_after_column = 'compass_id'  # додаємо нову колонку після
+                col_index = merged_df.columns.get_loc(insert_after_column)
+                merged_df.insert(col_index + 1, 'dtype', 'PersLinked ->')
                 towrite = io.BytesIO()
                 merged_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)

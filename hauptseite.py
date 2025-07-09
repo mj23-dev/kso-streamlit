@@ -7,7 +7,7 @@ from utils.db import connect_temp_duckdb
 st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
 
 # === КРОК 1: Завантаження файлу бази ===
-st.title(":material/database: KSO DataWarehouse ⚡")
+st.title("KSO DataWarehouse ⚡")
 
 st.header("To continue work with DB - please upload local database file 'kso_web.db':")
 
