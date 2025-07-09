@@ -290,7 +290,7 @@ if len(selected_df) > 0:
                     """
         df2 = conn.execute(query).fetchdf()
 
-        tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
+        tab1, tab2 = placeholder.tabs([f"Unternehmen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
         with tab1:
             # Поза межами spinner — вивід даних
             dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
