@@ -1,14 +1,16 @@
 import streamlit as st
 import pandas as pd
-import time, io, base64
-import streamlit.components.v1 as components
+import io
+import time
 from datetime import datetime
 from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import JsCode
 from reflex_ag_grid import ag_grid
 
-# === Підключення до бази ===
+title = 'berichte'
+st.set_page_config(page_title=f"KSO-Db v1.0 - {title}", layout="wide")
+
 conn = st.session_state.get("conn")
 if conn is None:
     st.warning("You need to upload database file from hauptsite!")
@@ -21,29 +23,23 @@ if "reload_grid" in st.session_state:
 if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
-title = 'personen'
-st.subheader("👤 Persons (Personen)")
+st.subheader("💼 KSO-Management (KSÖ-Management)")
 
 # === 1. Завантаження даних
-query = load_sql(f"{title}/sel_profile.sql")
+query = load_sql(f"{title}/sel_management.sql")
 df = conn.execute(query).fetchdf()
 # обробляємо пусті дати
 for col in df.select_dtypes(include=['datetime']):
     df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
-
-# звязки uns_pers для експорту
-query = load_sql(f"{title}/sel_w_links_uns_pers.sql")
-df_pers = conn.execute(query).fetchdf()
-
+# формуємо датафрейм
 cnt_full = len(df)
 cnt_filtered = len(df)
 
 # === 2. Обробка Reset Filters ===
-# col_left, col_center1, col_center2, col_right = st.columns([0.65, 0.15, 0.15, 0.15])
-col_left, col_center1, col_right = st.columns([0.55, 0.15, 0.25])
+col_left, col_center1, col_center2, col_right = st.columns([0.65, 0.15, 0.15, 0.15])
 with col_left:
-    st.markdown("✔️ Click checkbox to view details:")
-with col_center1:
+    st.markdown("📋 Click checkbox to view details:")
+with col_right:
     if st.button("🔄 Reset filters", use_container_width=True):
         st.session_state["reload_grid"] = True
         st.session_state["reset_grid_key"] = f"grid_{datetime.now().timestamp()}"
@@ -56,56 +52,39 @@ cell_renderer = JsCode("""
                         function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                         """)
 
-gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
-# gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
+gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100) #Add pagination
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-gb.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True, width=150)
-gb.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='vollname_der_firma', header_name='Supreme structural unit', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
+gb.configure_column(field='cnt_pers', header_name='Cnt Pers', pinned='left', filter=ag_grid.filters.number, width=100)
+gb.configure_column(field='vor_nachname', header_name='Employee', pinned='left', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='prsd', header_name='Präsidium', filter=ag_grid.filters.multi, width=100)
+gb.configure_column(field='vrst', header_name='Vorstand', filter=ag_grid.filters.multi, width=100)
+gb.configure_column(field='gnrl', header_name='Generalsekretär', filter=ag_grid.filters.multi, width=100)
+gb.configure_column(field='rchn', header_name='Rechnungsprüfer', filter=ag_grid.filters.multi, width=100)
+gb.configure_column(field='pos1', header_name='Position1', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='pos2', header_name='Position2', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='juradr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='juradr_full', header_name='Address', filter=ag_grid.filters.multi, width=250)
+gb.configure_column(field='vorname', header_name='Vorname', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='nachname', header_name='Nachname', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=140)
 gb.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, width=140)
-gb.configure_column(field='pers_mitg', header_name='Mtg', filter=ag_grid.filters.multi, width=80)
-gb.configure_column(field='pers_mitg_maxd', header_name='Mtg MaxDatum', type=["customDateTimeFormat"],custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=120)
-gb.configure_column(field='anrede', header_name='Anrede', filter=ag_grid.filters.multi)
-gb.configure_column(field='titel_vorne', header_name='Titel Vorne', filter=ag_grid.filters.multi)
-gb.configure_column(field='titel_hinten', header_name='Titel Hinten', filter=ag_grid.filters.multi)
-gb.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='geburtsdatum', header_name='Geburtsdatum', type=["customDateTimeFormat"],custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date)
-gb.configure_column(field='sprachen', header_name='Sprachen', filter=ag_grid.filters.multi)
-gb.configure_column(field='email1', header_name='Email1', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='email2', header_name='Email2', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='email3', header_name='Email3', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='email4', header_name='Email4', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='email5', header_name='Email5', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungs_email1', header_name='RchnEmail1', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungs_email2', header_name='RchnEmail2', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungs_email3', header_name='RchnEmail3', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='domain', header_name='Domain', filter=ag_grid.filters.multi, width=150)
-
-gb.configure_column(field='juradr_land', header_name='Land', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='juradr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='adr_plz_ort', header_name='Plz-Ort', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='strasse', header_name='Strasse', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='juradr_full', header_name='Address', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='akt_maxd', header_name='Lst Akt Date', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
-gb.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.number, width=100)
-gb.configure_column(field='vollname_der_firma_aggr', header_name='Uns Full Name', filter=ag_grid.filters.multi)
-gb.configure_column(field='kurzbezeichnung_aggr', header_name='Uns Short Name', filter=ag_grid.filters.multi)
 
 grid_options = gb.build()
-
 grid_response = AgGrid(
     df,
     gridOptions=grid_options,
     enable_enterprise_modules=True,
     update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+    fit_columns_on_grid_load=False,
     theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
     pagination_page_size_selector=[20, 50, 100],
-    height=375,
+    height=360, # = 7 rows
     width='100%',
     header_checkbox_selection_filtered_only=True,
     show_toolbar=True, show_search=False, show_download_button=False,
@@ -117,86 +96,6 @@ grid_response = AgGrid(
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
-
-# === 5. Експорт
-with col_right:
-    with st.popover("⬇️ Export XLS", use_container_width=True):
-        col_left_exp, col_right_exp = st.columns([0.5,0.5])
-        with col_left_exp:
-            if st.button("🔄 Pers.xls", use_container_width=True):
-                file_exp1 = f"personen_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-                towrite = io.BytesIO()
-                filtered_df.to_excel(towrite, index=False, engine='openpyxl')
-                towrite.seek(0)
-                data1 = towrite.read()
-                b64 = base64.b64encode(data1).decode()
-                st.session_state['excel_file_name1'] = file_exp1
-                st.session_state['excel_file_data1'] = b64
-
-            if 'excel_file_name1' in st.session_state and 'excel_file_data1' in st.session_state:
-                # Генеруємо HTML-кнопку з JS, яка ховається після кліку
-                download_html1 = f"""
-                <html>
-                <head>
-                <script>
-                function hideButton() {{
-                    var btn = document.getElementById('download-btn1');
-                    btn.style.display = 'none';
-                }}
-                </script>
-                </head>
-                <body>
-                <a id="download-btn1" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data1']}" 
-                   download="{file_exp1}" 
-                   onclick="hideButton()"
-                   style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
-                   ⬇️ Download
-                </a>
-                </body>
-                </html>
-                """
-                components.html(download_html1, height=50, width=190)
-                if 'excel_file_name1' in st.session_state:
-                    del st.session_state['excel_file_name1']
-        with col_right_exp:
-            file_exp2 = f"personen_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-            if st.button("🔄 Pers+Uns.xls", use_container_width=True):
-                merged_df = pd.merge(filtered_df, df_pers, on='pers_id', how='left')
-                insert_after_column = 'kurzbezeichnung_aggr' # додаємо нову колонку після
-                col_index = merged_df.columns.get_loc(insert_after_column)
-                merged_df.insert(col_index + 1, 'dtype', 'UnsLinked ->')
-                towrite = io.BytesIO()
-                merged_df.to_excel(towrite, index=False, engine='openpyxl')
-                towrite.seek(0)
-                data2 = towrite.read()
-                b64 = base64.b64encode(data2).decode()
-                st.session_state['excel_file_name2'] = file_exp2
-                st.session_state['excel_file_data2'] = b64
-            if 'excel_file_name2' in st.session_state and 'excel_file_data2' in st.session_state:
-                # Генеруємо HTML-кнопку з JS, яка ховається після кліку
-                download_html2 = f"""
-                    <html>
-                    <head>
-                    <script>
-                    function hideButton() {{
-                        var btn = document.getElementById('download-btn2');
-                        btn.style.display = 'none';
-                    }}
-                    </script>
-                    </head>
-                    <body>
-                    <a id="download-btn2" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data2']}" 
-                       download="{file_exp2}" 
-                       onclick="hideButton()"
-                       style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
-                       ⬇️ Download
-                    </a>
-                    </body>
-                    </html>
-                    """
-                components.html(download_html2, height=50, width=190)
-                if 'excel_file_name2' in st.session_state:
-                    del st.session_state['excel_file_name2']
 
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
@@ -250,7 +149,7 @@ if len(selected_df) > 0:
     # except:
     #     pass
 
-    st.markdown("🔸**Details:**")
+    st.markdown(f"🔸**Details:**")
     with st.spinner("⏳ Loading ..."):
         # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
         placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
@@ -258,6 +157,9 @@ if len(selected_df) > 0:
 
         # 2. Наповнюємо вкладки
         selected_pers_id = selected_df.iloc[0]['pers_id']
+        selected_uns_id = selected_df.iloc[0]['uns_id']
+        selected_pers_vornachname = selected_df.iloc[0]['vor_nachname']
+        selected_uns_vollname = selected_df.iloc[0]['vollname_der_firma']
 
         query = f"""
                     SELECT wu.vollname_der_firma, wlup.pers_position, wu.uns_id, 
@@ -274,7 +176,7 @@ if len(selected_df) > 0:
                     INNER join main.w_links_uns_pers wlup on wlup.pers_id = wp.pers_id
                     INNER join main.w_uns wu on wu.uns_id = wlup.uns_id
                     WHERE wp.pers_id = '{selected_pers_id}'
-                    ORDER BY 2
+                    ORDER BY 3, 2
                     """
         df1 = conn.execute(query).fetchdf()
 
@@ -293,7 +195,25 @@ if len(selected_df) > 0:
                     """
         df2 = conn.execute(query).fetchdf()
 
-        tab1, tab2 = placeholder.tabs([f"Unternehmen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
+        query = f"""
+                    SELECT distinct wv.*
+                      from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link, 
+                                    wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
+                                    wv.adr_full, wv.aktivitaten_id
+                                from main.w_veranstaltung wv 
+                                group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year, 
+                                        wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
+                            ) wv
+                    INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
+                    WHERE wv2.uns_id = '{selected_uns_id}'
+                    ORDER BY 1 desc
+                    """
+        df3 = conn.execute(query).fetchdf()
+
+        tab1, tab2, tab3 = placeholder.tabs([f"{selected_pers_vornachname} vs Unternehmen ({str(len(df1))})",
+                                             f"{selected_pers_vornachname} vs Veranstaltung ({str(len(df2))})",
+                                             f"{selected_uns_vollname} vs Veranstaltung ({str(len(df3))})"
+                                             ])
         with tab1:
             # Поза межами spinner — вивід даних
             dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
@@ -389,6 +309,7 @@ if len(selected_df) > 0:
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
                 reload_data=True,
+                key='AgGrid1'
             )
 
         with tab2:
@@ -441,4 +362,58 @@ if len(selected_df) > 0:
                 allow_unsafe_jscode=True,
                 reload_data=True,
                 fit_columns_on_grid_load=True,
+                key='AgGrid2'
+            )
+
+        with tab3:
+            dfheight3 = 0 if len(df3) == 0 else 40.7 * min(len(df3) + 3, 10)
+            # обробляємо пусті дати
+            for col in df3.select_dtypes(include=['datetime']):
+                df3[col] = df3[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+            # формуємо датафрейм
+            gb3 = GridOptionsBuilder.from_dataframe(df3)
+            cell_renderer = JsCode(""" function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
+            gb3.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
+            gb3.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+            gb3.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+            gb3.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
+            gb3.configure_column(field="agenda_link", headerName="Agenda link", width=100,
+                                cellRenderer=JsCode("""
+                    class UrlCellRenderer {
+                      init(params) {
+                        this.eGui = document.createElement('a');
+                        this.eGui.innerText = params.value;
+                        this.eGui.setAttribute('href', params.value);
+                        this.eGui.setAttribute('style', "text-decoration:none");
+                        this.eGui.setAttribute('target', "_blank");
+                      }
+                      getGui() {
+                        return this.eGui;
+                      }
+                    }
+                """)
+                                )
+            gb3.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
+            gb3.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
+            gb3.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
+            gb3.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
+            gb3.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
+            gb3.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
+
+            grid_options3 = gb3.build()
+            grid_response3 = AgGrid(
+                df3,
+                gridOptions=grid_options3,
+                # enable_enterprise_modules=True,
+                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+                data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+                theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+                pagination_page_size_selector=[20, 50, 100],
+                height=dfheight3,  # = 7 rows
+                width='100%',
+                show_toolbar=True, show_search=False, show_download_button=False,
+                allow_unsafe_jscode=True,
+                reload_data=True,
+                fit_columns_on_grid_load=True,
+                key='AgGrid3'
             )

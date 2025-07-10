@@ -25,7 +25,7 @@ pages = {
         st.Page("_pages/veranstaltungen/v-profile.py", title="🪪 Profile"),
     ],
     "📊 Berichte": [
-        st.Page("_pages/berichte/berichte01.py", title="📈 Page 1"),
+        st.Page("_pages/berichte/b-management.py", title="💼 KSO-Management"),
     ],
 }
 
