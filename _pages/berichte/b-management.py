@@ -195,25 +195,30 @@ if len(selected_df) > 0:
                     """
         df2 = conn.execute(query).fetchdf()
 
-        query = f"""
-                    SELECT distinct wv.*
-                      from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link, 
-                                    wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
-                                    wv.adr_full, wv.aktivitaten_id
-                                from main.w_veranstaltung wv 
-                                group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year, 
-                                        wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
-                            ) wv
-                    INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
-                    WHERE wv2.uns_id = '{selected_uns_id}'
-                    ORDER BY 1 desc
-                    """
-        df3 = conn.execute(query).fetchdf()
+        # query = f"""
+        #             SELECT distinct wv.*
+        #               from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link,
+        #                             wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
+        #                             wv.adr_full, wv.aktivitaten_id
+        #                         from main.w_veranstaltung wv
+        #                         group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year,
+        #                                 wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
+        #                     ) wv
+        #             INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
+        #             WHERE wv2.uns_id = '{selected_uns_id}'
+        #             ORDER BY 1 desc
+        #             """
+        # df3 = conn.execute(query).fetchdf()
 
-        tab1, tab2, tab3 = placeholder.tabs([f"{selected_pers_vornachname} vs Unternehmen ({str(len(df1))})",
-                                             f"{selected_pers_vornachname} vs Veranstaltung ({str(len(df2))})",
-                                             f"{selected_uns_vollname} vs Veranstaltung ({str(len(df3))})"
+        # tab1, tab2, tab3 = placeholder.tabs([f"{selected_pers_vornachname} vs Unternehmen ({str(len(df1))})",
+        #                                      f"{selected_pers_vornachname} vs Veranstaltung ({str(len(df2))})",
+        #                                      f"{selected_uns_vollname} vs Veranstaltung ({str(len(df3))})"
+        #                                      ])
+
+        tab1, tab2 = placeholder.tabs([f"{selected_pers_vornachname} vs Unternehmen ({str(len(df1))})",
+                                             f"{selected_pers_vornachname} vs Veranstaltung ({str(len(df2))})"
                                              ])
+
         with tab1:
             # Поза межами spinner — вивід даних
             dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
@@ -365,55 +370,55 @@ if len(selected_df) > 0:
                 key='AgGrid2'
             )
 
-        with tab3:
-            dfheight3 = 0 if len(df3) == 0 else 40.7 * min(len(df3) + 3, 10)
-            # обробляємо пусті дати
-            for col in df3.select_dtypes(include=['datetime']):
-                df3[col] = df3[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
-            # формуємо датафрейм
-            gb3 = GridOptionsBuilder.from_dataframe(df3)
-            cell_renderer = JsCode(""" function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
-            gb3.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
-            gb3.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
-            gb3.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-            gb3.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
-            gb3.configure_column(field="agenda_link", headerName="Agenda link", width=100,
-                                cellRenderer=JsCode("""
-                    class UrlCellRenderer {
-                      init(params) {
-                        this.eGui = document.createElement('a');
-                        this.eGui.innerText = params.value;
-                        this.eGui.setAttribute('href', params.value);
-                        this.eGui.setAttribute('style', "text-decoration:none");
-                        this.eGui.setAttribute('target', "_blank");
-                      }
-                      getGui() {
-                        return this.eGui;
-                      }
-                    }
-                """)
-                                )
-            gb3.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
-            gb3.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
-            gb3.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
-            gb3.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
-            gb3.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
-            gb3.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
-
-            grid_options3 = gb3.build()
-            grid_response3 = AgGrid(
-                df3,
-                gridOptions=grid_options3,
-                # enable_enterprise_modules=True,
-                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-                data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-                pagination_page_size_selector=[20, 50, 100],
-                height=dfheight3,  # = 7 rows
-                width='100%',
-                show_toolbar=True, show_search=False, show_download_button=False,
-                allow_unsafe_jscode=True,
-                reload_data=True,
-                fit_columns_on_grid_load=True,
-                key='AgGrid3'
-            )
+        # with tab3:
+        #     dfheight3 = 0 if len(df3) == 0 else 40.7 * min(len(df3) + 3, 10)
+        #     # обробляємо пусті дати
+        #     for col in df3.select_dtypes(include=['datetime']):
+        #         df3[col] = df3[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+        #     # формуємо датафрейм
+        #     gb3 = GridOptionsBuilder.from_dataframe(df3)
+        #     cell_renderer = JsCode(""" function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
+        #     gb3.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
+        #     gb3.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+        #     gb3.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+        #     gb3.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
+        #     gb3.configure_column(field="agenda_link", headerName="Agenda link", width=100,
+        #                         cellRenderer=JsCode("""
+        #             class UrlCellRenderer {
+        #               init(params) {
+        #                 this.eGui = document.createElement('a');
+        #                 this.eGui.innerText = params.value;
+        #                 this.eGui.setAttribute('href', params.value);
+        #                 this.eGui.setAttribute('style', "text-decoration:none");
+        #                 this.eGui.setAttribute('target', "_blank");
+        #               }
+        #               getGui() {
+        #                 return this.eGui;
+        #               }
+        #             }
+        #         """)
+        #                         )
+        #     gb3.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
+        #     gb3.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
+        #     gb3.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
+        #     gb3.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
+        #     gb3.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
+        #     gb3.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
+        #
+        #     grid_options3 = gb3.build()
+        #     grid_response3 = AgGrid(
+        #         df3,
+        #         gridOptions=grid_options3,
+        #         # enable_enterprise_modules=True,
+        #         update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+        #         data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+        #         theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+        #         pagination_page_size_selector=[20, 50, 100],
+        #         height=dfheight3,  # = 7 rows
+        #         width='100%',
+        #         show_toolbar=True, show_search=False, show_download_button=False,
+        #         allow_unsafe_jscode=True,
+        #         reload_data=True,
+        #         fit_columns_on_grid_load=True,
+        #         key='AgGrid3'
+        #     )
