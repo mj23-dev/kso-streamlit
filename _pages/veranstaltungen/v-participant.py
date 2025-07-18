@@ -74,8 +74,8 @@ gb.configure_column(field="agenda_link", headerName="Agenda link", width=200, mi
         }
     """)
 )
-gb.configure_column(field='cntp_pers', header_name='Plan Pers', filter=ag_grid.filters.number, maxWidth=100)
-gb.configure_column(field='cntf_pers', header_name='Fact Pers', filter=ag_grid.filters.number, maxWidth=100)
+gb.configure_column(field='cntp_pers', header_name='Plan Pers', filter=ag_grid.filters.number, width=105)
+gb.configure_column(field='cntf_pers', header_name='Fact Pers', filter=ag_grid.filters.number, width=105)
 gb.configure_column(field='cnt_uns', header_name='Fact Uns', filter=ag_grid.filters.number, maxWidth=100)
 gb.configure_column(field='datum_bis_year', header_name='Year Bis', filter=ag_grid.filters.multi, maxWidth=100)
 gb.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, maxWidth=100)
