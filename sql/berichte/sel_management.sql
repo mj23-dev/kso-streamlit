@@ -29,7 +29,7 @@ select wu.vollname_der_firma,
 				) wu
 		group by wu.uns_id, wu.vollname_der_firma, wu.juradr_bundesland, wu.juradr_full, wu.pers_id, wu.vorname, wu.nachname, wu.email1
 		) wu
-where wu.uns_id not in ('V0444913001.000','V0444913001.010')
+where wu.uns_id not in ('V0444913001.000','V0444913001.011')
 order by wu.uns_id, 4 desc, 5 desc, 6 desc, 7 desc,
 		case when wu.pos1 = 'Präsident' then 1
 			 when wu.pos1 = '1. Vizepräsident' then 2

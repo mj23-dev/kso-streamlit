@@ -123,8 +123,8 @@ with col_right:
     with st.popover("⬇️ Export XLS", use_container_width=True):
         col_left_exp, col_right_exp = st.columns([0.5,0.5])
         with col_left_exp:
-            if st.button("🔄 Pers.xls", use_container_width=True):
-                file_exp1 = f"personen_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            if st.button("🔄 Pers", use_container_width=True):
+                file_exp1 = f"p-profile_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
                 towrite = io.BytesIO()
                 filtered_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)
@@ -159,8 +159,8 @@ with col_right:
                 if 'excel_file_name1' in st.session_state:
                     del st.session_state['excel_file_name1']
         with col_right_exp:
-            file_exp2 = f"personen_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
-            if st.button("🔄 Pers+Uns.xls", use_container_width=True):
+            file_exp2 = f"p-profile_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            if st.button("🔄 Pers+Uns", use_container_width=True):
                 merged_df = pd.merge(filtered_df, df_pers, on='pers_id', how='left')
                 insert_after_column = 'kurzbezeichnung_aggr' # додаємо нову колонку після
                 col_index = merged_df.columns.get_loc(insert_after_column)
