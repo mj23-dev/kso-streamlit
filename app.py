@@ -23,6 +23,7 @@ pages = {
     ],
     "📅 Veranstaltungen": [
         st.Page("_pages/veranstaltungen/v-profile.py", title="🪪 Profile"),
+        st.Page("_pages/veranstaltungen/v-participant.py", title="🙋 Participant Plan/Fact"),
     ],
     "📊 Berichte": [
         st.Page("_pages/berichte/b-management.py", title="💼 KSO-Management"),

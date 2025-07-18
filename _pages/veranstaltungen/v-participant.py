@@ -23,10 +23,10 @@ if "reload_grid" in st.session_state:
 if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
-st.subheader("📅 Activities (Veranstaltungen)")
+st.subheader("🙋 Participants Plan/Fact (Teilnehmer)")
 
 # === 1. Завантаження даних
-query = load_sql(f"{title}/sel_profile.sql")
+query = load_sql(f"{title}/sel_participant.sql")
 df = conn.execute(query).fetchdf()
 # обробляємо пусті дати
 for col in df.select_dtypes(include=['datetime']):
@@ -74,8 +74,9 @@ gb.configure_column(field="agenda_link", headerName="Agenda link", width=200, mi
         }
     """)
 )
-gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number, maxWidth=100)
-gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.number, maxWidth=100)
+gb.configure_column(field='cntp_pers', header_name='Plan Pers', filter=ag_grid.filters.number, maxWidth=100)
+gb.configure_column(field='cntf_pers', header_name='Fact Pers', filter=ag_grid.filters.number, maxWidth=100)
+gb.configure_column(field='cnt_uns', header_name='Fact Uns', filter=ag_grid.filters.number, maxWidth=100)
 gb.configure_column(field='datum_bis_year', header_name='Year Bis', filter=ag_grid.filters.multi, maxWidth=100)
 gb.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, maxWidth=100)
 gb.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150, minWidth=100, maxWidth=500)
@@ -137,32 +138,34 @@ if len(selected_df) > 0:
         # 2. Наповнюємо вкладки
         selected_id = selected_df.iloc[0]['aktivitaten_id']
         query1 = f"""
-                    SELECT wv.vorname, wv.nachname, wv.anrede, wv.titel_vorne, wv.titel_hinten, wv.pers_rolle, wv.kso_pers_position,
+                    SELECT case when wv.fact = 'fact' then '+' else 'missing' end as part, 
+                            wv.vorname, wv.nachname, 
+                            wv.anrede, wv.titel_vorne, wv.titel_hinten, wv.pers_rolle, wv.kso_pers_position,
                             concat_ws('; ', wv.email1, wv.email2, wv.email3) as email,
                             wv.pers_mitg, wv.pers_mitg_maxd, 
                             wv.vollname_der_firma, wv.uns_mitg, wv.uns_mitg_maxd,
                             wu.product_name_agg,
                             wv.uns_id, wv.pers_id, wv.aktivitaten_id, wv.datum_titel
-                    FROM w_veranstaltung wv
-                    LEFT JOIN w_uns wu ON wv.uns_id = wu.uns_id
+                    FROM main.w_veranstaltung wv
+                    LEFT JOIN main.w_uns wu ON wv.uns_id = wu.uns_id
                     WHERE wv.aktivitaten_id = '{selected_id}'
-                    and wv.fact = 'fact'
                     and not(wv.uns_id is null and wv.pers_id is null)
-                    ORDER BY wv.vollname_der_firma, wv.nachname, wv.vorname
+                    ORDER BY 1, wv.vollname_der_firma, wv.nachname, wv.vorname
                     """
         df1 = conn.execute(query1).fetchdf()
 
         query2 = f"""
                     select distinct
-                            wv.vollname_der_firma, wu.seite, wu.email, wu.telefonnummer, wu.rechtsform, wu.product_name_agg, wu.tatigkeitsbeschreibung, 
+                            case when wv.fact = 'fact' then '+' else 'missing' end as part, 
+                            wv.vollname_der_firma, 
+                            wu.seite, wu.email, wu.telefonnummer, wu.rechtsform, wu.product_name_agg, wu.tatigkeitsbeschreibung, 
                             wu.uns_mitg, wu.uns_mitg_maxd, wu.aktivitaten_id as last_akt_id, strftime(wu.akt_maxd, '%Y-%m-%d') || ' | ' || wu.akt_titel as akt_datum_titel,
                             wu.juradr_land, wu.juradr_bundesland, wu.juradr_plz_ort, wu.juradr_strasse,
                             wu.heaf, wu.uns_id, wu.hauptunternehmen_id, wv.aktivitaten_id, wv.datum_titel
                     from w_veranstaltung wv
                     inner join w_uns wu on wv.uns_id = wu.uns_id
                     where wv.aktivitaten_id = '{selected_id}'
-                    and wv.fact = 'fact'
-                    order by wv.vollname_der_firma
+                    order by 1, wv.vollname_der_firma
                 """
         df2 = conn.execute(query2).fetchdf()
 
@@ -177,6 +180,7 @@ if len(selected_df) > 0:
             gb1.configure_pagination(enabled=True, paginationAutoPageSize=False,paginationPageSize=100)  # Add pagination
             gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
             # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
+            gb1.configure_column(field='part', header_name='Part', pinned='left', filter=ag_grid.filters.multi, maxWidth=85)
             gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi, maxWidth=150)
             gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi, maxWidth=150)
             gb1.configure_column(field='anrede', header_name='Anrede', filter=ag_grid.filters.multi, maxWidth=100)
@@ -225,6 +229,7 @@ if len(selected_df) > 0:
             gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
             gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
             # gb2.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
+            gb2.configure_column(field='part', header_name='Part', pinned='left', filter=ag_grid.filters.multi, minWidth=85, maxWidth=85)
             gb2.configure_column(field='vollname_der_firma', header_name='Vollname der firma', pinned='left', filter=ag_grid.filters.text, minWidth=400, maxWidth=400)
             gb2.configure_column(
                 "seite",
