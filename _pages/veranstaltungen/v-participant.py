@@ -153,7 +153,6 @@ if len(selected_df) > 0:
                     ORDER BY 1, wv.vollname_der_firma, wv.nachname, wv.vorname
                     """
         df1 = conn.execute(query1).fetchdf()
-
         query2 = f"""
                     select distinct
                             case when wv.fact = 'fact' then '+' else 'missing' end as part, 
@@ -169,7 +168,7 @@ if len(selected_df) > 0:
                 """
         df2 = conn.execute(query2).fetchdf()
 
-        tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1))})", f"Unternehmen ({str(len(df2))})"])
+        tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1[df1['part'] == '+']))}/{str(len(df1))})", f"Unternehmen ({str(len(df2[df2['part'] == '+']))}/{str(len(df2))})"])
         with tab1:
             dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1),10)
             # обробляємо пусті дати
