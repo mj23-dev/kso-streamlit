@@ -333,11 +333,11 @@ if len(selected_df) > 0:
             gb1.configure_column(field='pers_mitg', header_name='Mtg', filter=ag_grid.filters.multi, maxWidth=100)
             gb1.configure_column(field='pers_mitg_maxd', header_name='Mtg MaxDatum',
                                  type=["customDateTimeFormat"],
-                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, maxWidth=120)
+                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=120)
             gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
             gb1.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi, minWidth=200)
             gb1.configure_column(field='akt_maxd', header_name='Lst Akt Date', type=["customDateTimeFormat"],
-                                custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.date, width=130)
+                                custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
             gb1.configure_column(field='kurzbezeichnung', header_name='Short Name', filter=ag_grid.filters.multi, width=300)
             gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
 
