@@ -7,3 +7,4 @@ pyzipper
 gdown
 streamlit-aggrid
 reflex_ag_grid
+fastapi
