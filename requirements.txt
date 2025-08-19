@@ -1,10 +1,10 @@
 streamlit==1.25
-streamlit-aggrid==0.3.4
 pandas
 duckdb
 openpyxl
 requests
 pyzipper
 gdown
+streamlit-aggrid
 reflex_ag_grid
 fastapi
