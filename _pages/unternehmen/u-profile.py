@@ -131,8 +131,6 @@ grid_response = AgGrid(
     key=st.session_state["reset_grid_key"]
 )
 
-st.write("Selected:", grid_response['selected_rows'])
-
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
 
@@ -219,6 +217,8 @@ with col_right:
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
+st.write("Selected:", grid_response['selected_rows'])
+
 if len(selected_df) > 0:
 
     placeholder_col = st.empty()
