@@ -116,7 +116,8 @@ grid_response = AgGrid(
     df,
     gridOptions=grid_options,
     enable_enterprise_modules=True,
-    update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
     pagination_page_size_selector=[10, 20, 50, 100, 1000],
@@ -129,6 +130,8 @@ grid_response = AgGrid(
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
+
+st.write("Selected:", grid_response['selected_rows'])
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
