@@ -5,6 +5,5 @@ openpyxl
 requests
 pyzipper
 gdown
-streamlit-aggrid
-reflex_ag_grid
+streamlit-aggrid==0.3.4
 fastapi
