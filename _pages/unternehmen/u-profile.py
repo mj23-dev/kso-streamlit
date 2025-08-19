@@ -116,11 +116,11 @@ grid_response = AgGrid(
     df,
     gridOptions=grid_options,
     enable_enterprise_modules=True,
-    # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-    update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
+    update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     # theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    theme="ALPINE",
+    theme="blue",
     pagination_page_size_selector=[10, 20, 50, 100, 1000],
     height=375,
     width='100%',
