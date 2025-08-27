@@ -23,7 +23,7 @@ if "reload_grid" in st.session_state:
 if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
-st.subheader("💼 KSO-Management (KSÖ-Management)")
+st.subheader("💼 KSÖ-Management")
 
 # === 1. Завантаження даних
 query = load_sql(f"{title}/sel_management.sql")
@@ -43,7 +43,7 @@ cnt_filtered = len(df)
 # === 2. Обробка Reset Filters ===
 col_left, col_center, col_right = st.columns([0.55, 0.15, 0.25])
 with col_left:
-    st.markdown("📋 Click checkbox to view details:")
+    st.markdown("📋 Klicken Sie auf das Checkbox, um Details anzuzeigen:")
 with col_center:
     if st.button("🔄 Reset filters", use_container_width=True):
         st.session_state["reload_grid"] = True
@@ -62,9 +62,9 @@ gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-gb.configure_column(field='vollname_der_firma', header_name='Supreme structural unit', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
+gb.configure_column(field='vollname_der_firma', header_name='Oberste Struktureinheit', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', pinned='left', filter=ag_grid.filters.number, width=100)
-gb.configure_column(field='vor_nachname', header_name='Employee', pinned='left', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='vor_nachname', header_name='Vor- und Nachname', pinned='left', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='prsd', header_name='Präsidium', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='vrst', header_name='Vorstand', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='gnrl', header_name='Generalsekretär', filter=ag_grid.filters.multi, width=100)
@@ -73,7 +73,7 @@ gb.configure_column(field='pos1', header_name='Position1', filter=ag_grid.filter
 gb.configure_column(field='pos2', header_name='Position2', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='juradr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_full', header_name='Address', filter=ag_grid.filters.multi, width=250)
+gb.configure_column(field='juradr_full', header_name='Adresse', filter=ag_grid.filters.multi, width=250)
 gb.configure_column(field='vorname', header_name='Vorname', filter=ag_grid.filters.multi, width=150)
 gb.configure_column(field='nachname', header_name='Nachname', filter=ag_grid.filters.multi, width=150)
 gb.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=140)
@@ -191,7 +191,7 @@ if len(selected_df) > 0:
     # placeholder_col = st.empty()
     # col_adr, col_form = placeholder_col.columns([0.5, 0.5])
     # with col_adr:
-    #     st.markdown(f"🔸**Address:** {selected_df.iloc[0]['rechnungsadr_full']}")
+    #     st.markdown(f"🔸**Adresse:** {selected_df.iloc[0]['rechnungsadr_full']}")
     # with col_form:
     #     if selected_df.iloc[0]['rechtsform']:
     #         st.markdown(f"🔸**Rechtsform:** {selected_df.iloc[0]['rechtsform']}")
@@ -325,13 +325,13 @@ if len(selected_df) > 0:
             gb1.configure_selection(selection_mode="single")  # Enable single selection (multiple)
             gb1.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-            gb1.configure_column(field='vollname_der_firma', header_name='Full Name', pinned='left',
+            gb1.configure_column(field='vollname_der_firma', header_name='Voller Name', pinned='left',
                                 filter=ag_grid.filters.multi)
             gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, width=200)
             gb1.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi)
             gb1.configure_column(
                 "seite",
-                headerName="Link",
+                headerName="Link zur Website",
                 width=200,
                 cellRenderer=JsCode("""
                     class UrlCellRenderer {
@@ -363,22 +363,22 @@ if len(selected_df) > 0:
             gb1.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=ag_grid.filters.multi, width=200)
             gb1.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid.filters.multi, width=200)
             gb1.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
-            gb1.configure_column(field='product_name_agg', header_name='Product Compass', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='product_name_agg', header_name="Produkte von 'Compass'", filter=ag_grid.filters.multi)
             gb1.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung',
                                 filter=ag_grid.filters.multi, width=300)
             gb1.configure_column(field='uns_mitg', header_name='Uns Mtg', filter=ag_grid.filters.number, width=100)
-            gb1.configure_column(field='uns_mitg_maxd', header_name='Lst Mtg Date', type=["customDateTimeFormat"],
+            gb1.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"],
                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
-            gb1.configure_column(field='aktivitaten_id', header_name='Lst Akt ID', filter=ag_grid.filters.multi,
+            gb1.configure_column(field='aktivitaten_id', header_name='Letzte Akt ID', filter=ag_grid.filters.multi,
                                 width=120)
-            gb1.configure_column(field='akt_titel', header_name='Lst Akt Titel', filter=ag_grid.filters.multi)
-            gb1.configure_column(field='akt_maxd', header_name='Lst Akt Date', type=["customDateTimeFormat"],
+            gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"],
                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
             gb1.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, width=80)
             gb1.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=ag_grid.filters.multi,
                                 width=120)
-            gb1.configure_column(field='rechnungsadr_full', header_name='Address', filter=ag_grid.filters.multi)
-            gb1.configure_column(field='kurzbezeichnung', header_name='Short Name', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='rechnungsadr_full', header_name='Adresse', filter=ag_grid.filters.multi)
+            gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi)
             gb1.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi,
                                 width=100)
             gb1.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)

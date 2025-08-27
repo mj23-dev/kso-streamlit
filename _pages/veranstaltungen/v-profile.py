@@ -23,7 +23,7 @@ if "reload_grid" in st.session_state:
 if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
-st.subheader("📅 Activities (Veranstaltungen)")
+st.subheader("📅 Veranstaltungen (Activities)")
 
 # === 1. Завантаження даних
 query = load_sql(f"{title}/sel_profile.sql")
@@ -55,7 +55,7 @@ cnt_filtered = len(df)
 # === 2. Обробка Reset Filters ===
 col_left, col_center, col_right = st.columns([0.55, 0.15, 0.25])
 with col_left:
-    st.markdown("📋 Click checkbox to view details:")
+    st.markdown("📋 Klicken Sie auf das Checkbox, um Details anzuzeigen:")
 with col_center:
     if st.button("🔄 Reset filters", use_container_width=True):
         st.session_state["reload_grid"] = True
@@ -74,7 +74,7 @@ gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-gb.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=400, minWidth=200, maxWidth=1000)
+gb.configure_column(field='datum_titel', header_name='Data | Titel', pinned='left', filter=ag_grid.filters.multi, width=400, minWidth=200, maxWidth=1000)
 gb.configure_column(field="agenda_link", headerName="Agenda link", width=200, minWidth=100, maxWidth=200,
     cellRenderer=JsCode("""
         class UrlCellRenderer {
@@ -93,15 +93,15 @@ gb.configure_column(field="agenda_link", headerName="Agenda link", width=200, mi
 )
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number, maxWidth=100)
 gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.number, maxWidth=100)
-gb.configure_column(field='datum_bis_year', header_name='Year Bis', filter=ag_grid.filters.multi, maxWidth=100)
+gb.configure_column(field='datum_bis_year', header_name='Jahr', filter=ag_grid.filters.multi, maxWidth=100)
 gb.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, maxWidth=100)
 gb.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150, minWidth=100, maxWidth=500)
-gb.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=500)
+gb.configure_column(field='akt_org', header_name='Organisator', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=500)
 gb.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=1000)
 gb.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, headerCheckboxSelection = True, maxWidth=125)
-gb.configure_column(field='datum_bis', header_name='Datum Bis', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
+gb.configure_column(field='datum_bis', header_name='Data Bis', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
 gb.configure_column(field='titel', header_name='Titel', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=1000)
-gb.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=500)
+gb.configure_column(field='adr_full', header_name='Adresse der Veranstaltung', filter=ag_grid.filters.multi, width=200, minWidth=100, maxWidth=500)
 # gb.configure_columns(["aktivitaten_id", "datum_titel", "format", "datum_bis_year", "datum_bis", "titel"], filterParams={"buttons": ['apply', 'clear']})
 
 grid_options = gb.build()
@@ -215,17 +215,17 @@ if len(selected_df) > 0:
     col_left, col_right = placeholder_col.columns([0.5, 0.5])
     with col_left:
         if selected_df.iloc[0]['akt_org'] != '-':
-            st.markdown(f"**Organizer:**")
+            st.markdown(f"**Organisator:**")
             for item in selected_df.iloc[0]['akt_org'].split('|'):
                 st.text(f"🔸{item.strip()}")
-        st.markdown(f"**Address:** {selected_df.iloc[0]['adr_full']}")
+        st.markdown(f"**Adresse:** {selected_df.iloc[0]['adr_full']}")
     with col_right:
         if selected_df.iloc[0]['akt_spn'] != '-':
             st.markdown(f"**Sponsor:**")
             for item in selected_df.iloc[0]['akt_spn'].split('|'):
                 st.text(f"🔹{item.strip()}")
 
-    st.markdown("**Participants:**")
+    st.markdown("**Teilnehmer (Participants):**")
     with st.spinner("⏳ Loading ..."):
         # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
         placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
@@ -282,18 +282,18 @@ if len(selected_df) > 0:
             gb1.configure_column(field='pers_rolle', header_name='Rolle', filter=ag_grid.filters.multi, maxWidth=100)
             gb1.configure_column(field='kso_pers_position', header_name='KSO Position', filter=ag_grid.filters.multi, maxWidth=150)
             gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
-            gb1.configure_column(field='pers_mitg', header_name='Pers Mitg', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='pers_mitg_maxd', header_name='Pers Mitg MaxDatum', type=["customDateTimeFormat"],
+            gb1.configure_column(field='pers_mitg', header_name='Pers MG', filter=ag_grid.filters.multi, maxWidth=100)
+            gb1.configure_column(field='pers_mitg_maxd', header_name='Pers Letzte MG Data', type=["customDateTimeFormat"],
                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
             gb1.configure_column(field='vollname_der_firma', header_name='Vollname der firma', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
-            gb1.configure_column(field='product_name_agg', header_name='Uns Product', filter=ag_grid.filters.multi, maxWidth=250)
-            gb1.configure_column(field='uns_mitg', header_name='Uns Mtg', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='uns_mitg_maxd', header_name='Uns Mtg MaxDatum', type=["customDateTimeFormat"],
+            gb1.configure_column(field='product_name_agg', header_name="Uns Produkte von 'Compass'", filter=ag_grid.filters.multi, maxWidth=250)
+            gb1.configure_column(field='uns_mitg', header_name='Uns MG', filter=ag_grid.filters.multi, maxWidth=100)
+            gb1.configure_column(field='uns_mitg_maxd', header_name='Uns MG Letzte Data', type=["customDateTimeFormat"],
                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
             gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, maxWidth=120)
             gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
             gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, maxWidth=120)
-            gb1.configure_column(field='datum_titel', header_name='Datum | Titel', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
+            gb1.configure_column(field='datum_titel', header_name='Data | Titel', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
 
             grid_options1 = gb1.build()
             grid_response1 = AgGrid(
@@ -325,7 +325,7 @@ if len(selected_df) > 0:
             gb2.configure_column(field='vollname_der_firma', header_name='Vollname der firma', pinned='left', filter=ag_grid.filters.text, minWidth=400, maxWidth=400)
             gb2.configure_column(
                 "seite",
-                headerName="Link",
+                headerName="Link zur Website",
                 minWidth=250, maxWidth=500,
                 cellRenderer=JsCode("""
                                 class UrlCellRenderer {
@@ -348,18 +348,18 @@ if len(selected_df) > 0:
             gb2.configure_column(field='juradr_plz_ort', header_name='PLZ-Ort', filter=ag_grid.filters.multi, maxWidth=150)
             gb2.configure_column(field='juradr_strasse', header_name='Strasse', filter=ag_grid.filters.multi, maxWidth=150)
             gb2.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
-            gb2.configure_column(field='product_name_agg', header_name='Product', filter=ag_grid.filters.multi, minWidth=200, maxWidth=1000)
+            gb2.configure_column(field='product_name_agg', header_name="Produkte von 'Compass'", filter=ag_grid.filters.multi, minWidth=200, maxWidth=1000)
             gb2.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=ag_grid.filters.multi, minWidth=200, maxWidth=1000)
             gb2.configure_column(field='last_akt_id', header_name='Last Akt ID', filter=ag_grid.filters.multi, maxWidth=120)
-            gb2.configure_column(field='akt_datum_titel', header_name='Last aktivitaten', filter=ag_grid.filters.multi, maxWidth=200)
+            gb2.configure_column(field='akt_datum_titel', header_name='Letzte Akt', filter=ag_grid.filters.multi, maxWidth=200)
             gb2.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, maxWidth=100)
-            gb2.configure_column(field='product_name_agg', header_name='Uns Product', filter=ag_grid.filters.multi,maxWidth=250)
-            gb2.configure_column(field='uns_mitg', header_name='Uns Mitg', filter=ag_grid.filters.multi, maxWidth=100)
-            gb2.configure_column(field='uns_mitg_maxd', header_name='Uns Mitg MaxDatum', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
+            gb2.configure_column(field='product_name_agg', header_name="Uns Produkte von 'Compass'", filter=ag_grid.filters.multi,maxWidth=250)
+            gb2.configure_column(field='uns_mitg', header_name='Uns MG', filter=ag_grid.filters.multi, maxWidth=100)
+            gb2.configure_column(field='uns_mitg_maxd', header_name='Uns Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=125)
             gb2.configure_column(field='uns_id', header_name='ID uns', filter=ag_grid.filters.multi, maxWidth=120)
             gb2.configure_column(field='hauptunternehmen_id', header_name='ID haup', filter=ag_grid.filters.multi, maxWidth=120)
             gb2.configure_column(field='aktivitaten_id', header_name='ID akt', filter=ag_grid.filters.multi, maxWidth=120)
-            gb2.configure_column(field='datum_titel', header_name='Datum | Titel', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
+            gb2.configure_column(field='datum_titel', header_name='Data | Titel', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
 
             grid_options2 = gb2.build()
             grid_response2 = AgGrid(
