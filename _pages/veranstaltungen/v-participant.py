@@ -269,7 +269,7 @@ if len(selected_df) > 0:
 
         tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1[df1['part'] == '+']))}/{str(len(df1))})", f"Unternehmen ({str(len(df2[df2['part'] == '+']))}/{str(len(df2))})"])
         with tab1:
-            dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1),10)
+            dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
             # обробляємо пусті дати
             for col in df1.select_dtypes(include=['datetime']):
                 df1[col] = df1[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
@@ -317,7 +317,7 @@ if len(selected_df) > 0:
                 reload_data=True,
             )
         with tab2:
-            dfheight2 = 0 if len(df2) == 0 else 40.7 * min(len(df2),10)
+            dfheight2 = 0 if len(df2) == 0 else 40.7 * min(len(df2) + 3, 10)
             # обробляємо пусті дати
             for col in df2.select_dtypes(include=['datetime']):
                 df2[col] = df2[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
