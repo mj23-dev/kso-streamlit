@@ -1,5 +1,5 @@
 streamlit==1.46.0
-streamlit-aggrid
+streamlit-aggrid==1.1.8
 reflex_ag_grid
 fastapi
 pandas
