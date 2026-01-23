@@ -56,8 +56,7 @@ cell_renderer = JsCode("""
                         function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                         """)
 
-# gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
-gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100) #Add pagination
+gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
@@ -111,30 +110,24 @@ gb.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filt
 gb.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
 
-# Додай у GridOptionsBuilder:
-gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
 grid_options = gb.build()
-grid_options["immutableData"] = False  # ✅ Критично для checkbox
 
 grid_response = AgGrid(
     df,
     gridOptions=grid_options,
-    # enable_enterprise_modules=True,
-    enable_enterprise_modules=False,  # ✅ False для Cloud!
-    # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-    update_mode="SELECTION_CHANGED",  # ✅
+    enable_enterprise_modules=True,
+    update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
     # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
     # theme="balham",
-    # pagination_page_size_selector=[10, 20, 50, 100, 1000],
-    pagination_page_size_selector=[10, 20, 50, 100],
+    pagination_page_size_selector=[10, 20, 50, 100, 1000],
     height=375,
     width='100%',
     header_checkbox_selection_filtered_only=True,
     show_toolbar=True, show_search=False, show_download_button=False,
     allow_unsafe_jscode=True,
-    # reload_data=True,
+    reload_data=True,
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
@@ -347,15 +340,11 @@ if len(selected_df) > 0:
             gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi, width=300)
             gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
 
-            gb1.configure_grid_options(domLayout="normal")
-
             grid_options1 = gb1.build()
-            grid_options1["immutableData"] = False  # ✅ Критично для checkbox!
             grid_response1 = AgGrid(
                 df1,
                 gridOptions=grid_options1,
-                # enable_enterprise_modules=True,
-                enable_enterprise_modules=False,
+                enable_enterprise_modules=True,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="blue",
@@ -365,7 +354,7 @@ if len(selected_df) > 0:
                 width='100%',
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
-                # reload_data=True,
+                reload_data=True,
             )
 
         with tab2:
@@ -402,11 +391,8 @@ if len(selected_df) > 0:
             gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
             gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
             gb2.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
-            gb2.configure_grid_options(domLayout="normal")
 
             grid_options2 = gb2.build()
-            grid_options2["immutableData"] = False  # ✅ Критично для checkbox!
-
             grid_response2 = AgGrid(
                 df2,
                 gridOptions=grid_options2,
@@ -419,7 +405,7 @@ if len(selected_df) > 0:
                 width='100%',
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
-                # reload_data=True,
+                reload_data=True,
                 fit_columns_on_grid_load=True,
             )
 
