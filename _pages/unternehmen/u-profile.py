@@ -114,7 +114,7 @@ gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid
 # Додай у GridOptionsBuilder:
 gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
 grid_options = gb.build()
-# grid_options["immutableData"] = False  # ✅ Критично для checkbox
+grid_options["immutableData"] = False  # ✅ Критично для checkbox
 
 grid_response = AgGrid(
     df,
@@ -126,7 +126,7 @@ grid_response = AgGrid(
     # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     # theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    theme="blue",
+    theme="material",
     # pagination_page_size_selector=[10, 20, 50, 100, 1000],
     pagination_page_size_selector=[10, 20, 50, 100],
     height=375,
