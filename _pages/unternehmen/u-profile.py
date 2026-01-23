@@ -114,7 +114,7 @@ gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid
 # Додай у GridOptionsBuilder:
 gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
 grid_options = gb.build()
-grid_options["immutableData"] = False  # ✅ Критично для checkbox
+# grid_options["immutableData"] = False  # ✅ Критично для checkbox
 
 grid_response = AgGrid(
     df,
