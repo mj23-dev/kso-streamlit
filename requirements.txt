@@ -1,6 +1,7 @@
 streamlit==1.38.0
 streamlit-aggrid==0.3.4
 reflex_ag_grid
+fastapi
 pandas
 duckdb
 openpyxl
