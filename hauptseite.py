@@ -4,7 +4,7 @@ import pandas as pd
 from utils.db import connect_temp_duckdb
 # from streamlit_option_menu import option_menu
 
-st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
+# st.set_page_config(page_title="KSO-Db v1.0", layout="wide")
 
 # === КРОК 1: Завантаження файлу бази ===
 st.title("KSO DataWarehouse ⚡")
