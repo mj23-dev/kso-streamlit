@@ -122,6 +122,7 @@ grid_response = AgGrid(
     enable_enterprise_modules=True,
     # enable_enterprise_modules=False,  # ✅ False для Cloud!
     update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    update_on=GridUpdateMode.NO_UPDATE,
     # update_mode="SELECTION_CHANGED",  # ✅
     # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated", "gridChanged"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
