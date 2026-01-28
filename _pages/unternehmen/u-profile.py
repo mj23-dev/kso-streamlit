@@ -125,7 +125,7 @@ grid_response = AgGrid(
     # update_mode="SELECTION_CHANGED",  # ✅
     update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-    fit_columns_on_grid_load=True,
+    fit_columns_on_grid_load=False,
     # theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
     theme="blue",
     # pagination_page_size_selector=[10, 20, 50, 100, 1000],
@@ -359,7 +359,7 @@ if len(selected_df) > 0:
                 enable_enterprise_modules=False,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="streamlit",
+                theme="blue",
                 # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
                 pagination_page_size_selector=[10, 20, 50, 100],
                 height=dfheight1,  # = 7 rows
