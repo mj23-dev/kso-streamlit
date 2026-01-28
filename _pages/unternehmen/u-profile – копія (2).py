@@ -225,7 +225,7 @@ with col_right:
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
-# st.write("Selected (!!!Test:", grid_response['selected_rows'])
+# st.write("Selected:", grid_response['selected_rows'])
 
 if len(selected_df) > 0:
 
@@ -366,7 +366,6 @@ if len(selected_df) > 0:
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
                 # reload_data=True,
-                reload_data=False
             )
 
         with tab2:
@@ -421,7 +420,6 @@ if len(selected_df) > 0:
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
                 # reload_data=True,
-                reload_data = False,
                 fit_columns_on_grid_load=True,
             )
 
