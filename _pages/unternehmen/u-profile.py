@@ -355,8 +355,8 @@ if len(selected_df) > 0:
             grid_response1 = AgGrid(
                 df1,
                 gridOptions=grid_options1,
-                # enable_enterprise_modules=True,
-                enable_enterprise_modules=False,
+                enable_enterprise_modules=True,
+                # enable_enterprise_modules=False,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="blue",
@@ -412,7 +412,7 @@ if len(selected_df) > 0:
             grid_response2 = AgGrid(
                 df2,
                 gridOptions=grid_options2,
-                # enable_enterprise_modules=True,
+                enable_enterprise_modules=True,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="streamlit",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
