@@ -122,10 +122,10 @@ grid_response = AgGrid(
     enable_enterprise_modules=True,
     # enable_enterprise_modules=False,  # ✅ False для Cloud!
     # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-    update_mode="SELECTION_CHANGED",  # ✅
-    # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
+    # update_mode="SELECTION_CHANGED",  # ✅
+    update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-    fit_columns_on_grid_load=False,
+    fit_columns_on_grid_load=True,
     # theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
     theme="blue",
     # pagination_page_size_selector=[10, 20, 50, 100, 1000],
@@ -135,7 +135,7 @@ grid_response = AgGrid(
     header_checkbox_selection_filtered_only=True,
     show_toolbar=True, show_search=False, show_download_button=False,
     allow_unsafe_jscode=True,
-    reload_data=False,
+    # reload_data=False,
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
