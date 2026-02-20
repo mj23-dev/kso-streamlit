@@ -1,4 +1,6 @@
-select wu.vollname_der_firma, wmf.datum_von, wmf.datum_bis, wmf.cnt_mtg, wmf.rn_mtg,
+select wu.vollname_der_firma, wmf.datum_von, 
+	--wmf.datum_bis, wmf.cnt_mtg, wmf.rn_mtg,
+	wmf.contract, wp.vorname, wp.nachname,
 	wu.uns_id, wu.cnt_pers, 
 	case when wu.seite not like 'http%' and wu.seite not like 'www%' then null else wu.seite end as seite, 
 	wu.email, wu.telefonnummer, 
@@ -7,10 +9,12 @@ select wu.vollname_der_firma, wmf.datum_von, wmf.datum_bis, wmf.cnt_mtg, wmf.rn_
 	wu.rechtsform, 
 	wu.code5 as onace_code5, wu.onace_sh_de1, wu.onace_sh_de2, wu.onace_sh_de3, wu.onace_sh_de4, wu.onace_sh_de5,
 	wu.product_name_agg, wu.tatigkeitsbeschreibung,
-	wu.uns_mitg, wu.uns_mitg_maxd, wu.aktivitaten_id, wu.akt_titel, wu.akt_maxd,
+	--wu.uns_mitg, wu.uns_mitg_maxd, 
+	wu.aktivitaten_id, wu.akt_titel, wu.akt_maxd,
 	wu.heaf, wu.hauptunternehmen_id, wu.kurzbezeichnung, 
 	wu.juradr_full, wu.rechnungsadr_full,
-	wu.registrierungsstatus, wu.compass_id
+	wu.registrierungsstatus, wu.compass_id, wmf.pers_id
 from main.w_uns wu
 inner join main.w_mitglied_full wmf on wu.uns_id = wmf.uns_pers_id
-order by wmf.cnt_mtg desc, wu.uns_id, wmf.datum_bis desc
+left join main.w_pers wp on wmf.pers_id = wp.pers_id
+order by wmf.datum_von desc, wmf.cnt_mtg desc, wu.uns_id, wmf.datum_bis desc

@@ -22,10 +22,10 @@ if "reset_grid_key" not in st.session_state:
     st.session_state["reset_grid_key"] = "grid_default"
 
 title = 'unternehmen'
-st.subheader("💰 Ordentliche Mitglieder (Members)")
+st.subheader("🏢 Unternehmen (Сompanies)")
 
 # === 1. Завантаження даних
-query = load_sql(f"{title}/sel_member.sql")
+query = load_sql(f"{title}/sel_profile.sql")
 df = conn.execute(query).fetchdf()
 # обробляємо пусті дати
 for col in df.select_dtypes(include=['datetime']):
@@ -56,43 +56,19 @@ cell_renderer = JsCode("""
                         function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`}
                         """)
 
-gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
+# gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=5000) #Add pagination
+gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
 gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
 gb.configure_column(field='vollname_der_firma', header_name='Voller Name', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
-gb.configure_column(field='datum_von', header_name='Data von', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=110)
-# gb.configure_column(field='datum_bis', header_name='Data bis', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=110)
-# gb.configure_column(field='cnt_mtg', header_name='Cnt MG', filter=ag_grid.filters.number, width=95)
-# gb.configure_column(field='rn_mtg', header_name='Rn MG', filter=ag_grid.filters.number, width=95)
-gb.configure_column(
-    "contract",
-    headerName="Link zur Contract",
-    width=100,
-    cellRenderer=JsCode("""
-        class UrlCellRenderer {
-          init(params) {
-            this.eGui = document.createElement('a');
-            this.eGui.innerText = params.value;
-            this.eGui.setAttribute('href', params.value);
-            this.eGui.setAttribute('style', "text-decoration:none");
-            this.eGui.setAttribute('target', "_blank");
-          }
-          getGui() {
-            return this.eGui;
-          }
-        }
-    """)
-)
-gb.configure_column(field='vorname', header_name='Vorname MG', filter=ag_grid.filters.multi, maxWidth=150)
-gb.configure_column(field='nachname', header_name='Nachname MG', filter=ag_grid.filters.multi, maxWidth=150)
-gb.configure_column(field='uns_id', header_name='Uns_Id', filter=ag_grid.filters.multi)
-gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number, width=100)
+gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi)
+gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number)
 gb.configure_column(
     "seite",
-    headerName="Link zur Website",
+    headerName='Link zur Website',
     width=200,
     cellRenderer=JsCode("""
         class UrlCellRenderer {
@@ -111,12 +87,9 @@ gb.configure_column(
 )
 gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_land', header_name='Land Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_bundesland', header_name='Bundesland Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='juradr_plz_ort', header_name='Plz-Ort Jur', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_land', header_name='Land Rechn', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland Rechn', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort Rechn', filter=ag_grid.filters.multi, width=150)
+gb.configure_column(field='rechnungsadr_land', header_name='Land', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=200)
+gb.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.multi)
 gb.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=ag_grid.filters.multi, width=200)
@@ -124,38 +97,45 @@ gb.configure_column(field='onace_sh_de2', header_name='ONACE L2', filter=ag_grid
 gb.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='product_name_agg', header_name='Produkte von "Compas"', filter=ag_grid.filters.multi)
+gb.configure_column(field='product_name_agg', header_name="Produkte von 'Compass'", filter=ag_grid.filters.multi)
 gb.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=ag_grid.filters.multi, width=300)
-# gb.configure_column(field='uns_mitg', header_name='Uns MG', filter=ag_grid.filters.number, width=100)
-# gb.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
+gb.configure_column(field='uns_mitg', header_name='Uns MG', filter=ag_grid.filters.number, width=100)
+gb.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
 gb.configure_column(field='aktivitaten_id', header_name='Letzte Akt ID', filter=ag_grid.filters.multi, width=120)
 gb.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi)
 gb.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
 gb.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, width=80)
 gb.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='juradr_full', header_name='Adresse Jur', filter=ag_grid.filters.multi)
-gb.configure_column(field='rechnungsadr_full', header_name='Adresse Rechn', filter=ag_grid.filters.multi)
+gb.configure_column(field='rechnungsadr_full', header_name='Adresse', filter=ag_grid.filters.multi)
 gb.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi)
 gb.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='pers_id', header_name='Pers Id MG', filter=ag_grid.filters.multi)
 
+# Додай у GridOptionsBuilder:
+gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
 grid_options = gb.build()
+grid_options["immutableData"] = False  # ✅ Критично для checkbox
 
 grid_response = AgGrid(
     df,
     gridOptions=grid_options,
     enable_enterprise_modules=True,
-    update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    # enable_enterprise_modules=False,  # ✅ False для Cloud!
+    # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    # update_mode="SELECTION_CHANGED",  # ✅
+    update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated", "gridChanged"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-    theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-    pagination_page_size_selector=[10, 20, 50, 100, 1000],
+    fit_columns_on_grid_load=False,
+    # theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+    theme="blue",
+    # pagination_page_size_selector=[10, 20, 50, 100, 1000],
+    pagination_page_size_selector=[10, 20, 50, 100],
     height=375,
     width='100%',
     header_checkbox_selection_filtered_only=True,
     show_toolbar=True, show_search=False, show_download_button=False,
     allow_unsafe_jscode=True,
-    reload_data=True,
+    # reload_data=False,
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
@@ -169,7 +149,7 @@ with col_right:
         col_left_exp, col_right_exp = st.columns([0.5,0.5])
         with col_left_exp:
             if st.button("🔄 Uns", use_container_width=True):
-                file_exp1 = "u-memeber_uns_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+                file_exp1 = f"u-profile_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
                 towrite = io.BytesIO()
                 filtered_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)
@@ -204,9 +184,12 @@ with col_right:
                 if 'excel_file_name1' in st.session_state:
                     del st.session_state['excel_file_name1']
         with col_right_exp:
-            file_exp2 = f"u-member_uns_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+            file_exp2 = f"u-profile_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
             if st.button("🔄 Uns+Pers", use_container_width=True):
                 merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
+                insert_after_column = 'compass_id'  # додаємо нову колонку після
+                col_index = merged_df.columns.get_loc(insert_after_column)
+                merged_df.insert(col_index + 1, 'dtype', 'PersLinked ->')
                 towrite = io.BytesIO()
                 merged_df.to_excel(towrite, index=False, engine='openpyxl')
                 towrite.seek(0)
@@ -243,6 +226,8 @@ with col_right:
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
+# st.write("Selected (!!!Test:", grid_response['selected_rows'])
+
 if len(selected_df) > 0:
 
     placeholder_col = st.empty()
@@ -276,10 +261,10 @@ if len(selected_df) > 0:
     try:
         with col_prod:
             if selected_df.iloc[0]['product_name_agg']:
-                expander = col_prod.expander(f"**Produkt- und Dienstleistungskategorien (Compass):** {selected_df.iloc[0]['product_name_agg'].split('|')[0]} ... ↩️", expanded=False)
+                expander = col_prod.expander(f"**Produkte von 'Compass':** {selected_df.iloc[0]['product_name_agg'].split('|')[0]} ... ↩️", expanded=False)
                 expander.write(f"{selected_df.iloc[0]['product_name_agg']}")
             else:
-                expander = col_prod.expander("**Produkt- und Dienstleistungskategorien (Compass):** ❌", expanded=False)
+                expander = col_prod.expander("**Produkte von 'Compass':** ❌", expanded=False)
                 expander.write(f"")
     except:
         pass
@@ -311,7 +296,7 @@ if len(selected_df) > 0:
                     INNER JOIN main.w_links_uns_pers wlup ON wu.uns_id = wlup.uns_id
                     INNER JOIN main.w_pers wp ON wlup.pers_id = wp.pers_id
                     WHERE wu.uns_id = '{selected_uns_id}'
-                    ORDER BY case when wlup.pers_kategorie = 'MG_Ord_Vertr' then 1 else 2 end, 3,2
+                    ORDER BY 3,2
                     """
         df1 = conn.execute(query).fetchdf()
 
@@ -363,12 +348,16 @@ if len(selected_df) > 0:
             gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi, width=300)
             gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
 
+            gb1.configure_grid_options(domLayout="normal")
+
             grid_options1 = gb1.build()
+            grid_options1["immutableData"] = False  # ✅ Критично для checkbox!
             grid_response1 = AgGrid(
                 df1,
                 gridOptions=grid_options1,
                 enable_enterprise_modules=True,
-                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+                # enable_enterprise_modules=False,
+                update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="blue",
                 # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
@@ -377,7 +366,8 @@ if len(selected_df) > 0:
                 width='100%',
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
-                reload_data=True,
+                # reload_data=True,
+                reload_data=False
             )
 
         with tab2:
@@ -391,7 +381,7 @@ if len(selected_df) > 0:
             gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
             gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
             gb2.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-            gb2.configure_column(field='datum_titel', header_name='Data | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
+            gb2.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
             gb2.configure_column(field="agenda_link", headerName="Agenda link", width=100,
                                 cellRenderer=JsCode("""
                     class UrlCellRenderer {
@@ -409,26 +399,30 @@ if len(selected_df) > 0:
                 """)
                                 )
             gb2.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
-            gb2.configure_column(field='bundesland', header_name='Ort', filter=ag_grid.filters.multi, width=150)
+            gb2.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
             gb2.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
             gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
             gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
-            gb2.configure_column(field='adr_full', header_name='Adresse', filter=ag_grid.filters.multi, width=300)
+            gb2.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
+            gb2.configure_grid_options(domLayout="normal")
 
             grid_options2 = gb2.build()
+            grid_options2["immutableData"] = False  # ✅ Критично для checkbox!
+
             grid_response2 = AgGrid(
                 df2,
                 gridOptions=grid_options2,
-                # enable_enterprise_modules=True,
-                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+                enable_enterprise_modules=True,
+                update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+                theme="streamlit",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
                 pagination_page_size_selector=[20, 50, 100],
                 height=dfheight2,  # = 7 rows
                 width='100%',
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
-                reload_data=True,
+                # reload_data=True,
+                reload_data = False,
                 fit_columns_on_grid_load=True,
             )
 
