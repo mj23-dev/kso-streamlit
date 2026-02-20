@@ -69,7 +69,7 @@ gb.configure_column(field='datum_von', header_name='Data von', type=["customDate
 # gb.configure_column(field='rn_mtg', header_name='Rn MG', filter=ag_grid.filters.number, width=95)
 gb.configure_column(
     "contract",
-    headerName="Link zur Contract",
+    headerName="Link zum Vertrag",
     width=100,
     cellRenderer=JsCode("""
         class UrlCellRenderer {
