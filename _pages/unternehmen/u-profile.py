@@ -231,6 +231,9 @@ selected_df = pd.DataFrame(selected)
 if len(selected_df) > 0:
 
     st.markdown(f"🔸**Voller Name:** {selected_df.iloc[0]['vollname_der_firma']}")
+    st.dataframe(selected_df, use_container_width=True)
+
+    # st.rerun()  # ✅ ПРИМУСОВИЙ RERUN для всіх!
 
     placeholder_col = st.empty()
     col_adr, col_form = placeholder_col.columns([0.5, 0.5])
