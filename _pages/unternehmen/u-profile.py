@@ -7,6 +7,7 @@ from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import JsCode
 from reflex_ag_grid import ag_grid
+from itables.streamlit import interactive_table
 
 # === Підключення до бази ===
 conn = st.session_state.get("conn")
@@ -321,12 +322,17 @@ if len(selected_df) > 0:
     selected_uns_id = selected_df.iloc[0]['uns_id']
     df1, df2 = load_details_data(conn, selected_uns_id)
 
-    # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
-    tab1, tab2 = st.tabs([f"Personen ({len(df1)})", f"Veranstaltung ({len(df2)})"])
+    interactive_table(df1,
+                      caption='df1',
+                      select=True,
+                      # selected_rows=[0, 1, 2, 100, 207],
+                      buttons=['copyHtml5', 'csvHtml5', 'excelHtml5', 'colvis'])
 
     st.dataframe(df1, use_container_width=True)
-
     st.dataframe(df2, use_container_width=True)
+
+    # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
+    tab1, tab2 = st.tabs([f"Personen ({len(df1)})", f"Veranstaltung ({len(df2)})"])
 
     with tab1:
         # Поза межами spinner — вивід даних
