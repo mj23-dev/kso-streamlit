@@ -61,7 +61,9 @@ cell_renderer = JsCode("""
 gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
-gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
+# gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
+gb.configure_selection(selection_mode="single", use_checkbox=False, rowMultiSelectWithClick=True)
+
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
 gb.configure_column(field='vollname_der_firma', header_name='Voller Name', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
@@ -124,7 +126,7 @@ grid_response = AgGrid(
     enable_enterprise_modules=True,
     # enable_enterprise_modules=False,  # ✅ False для Cloud!
     # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-    update_mode="GRID_CHANGED",  # ✅
+    update_mode="MODEL_CHANGED",  # ✅
     # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated", "gridChanged"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     fit_columns_on_grid_load=False,
@@ -141,6 +143,20 @@ grid_response = AgGrid(
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
+
+selected_rows = grid_response.get('selected_rows', [])
+if selected_rows is not None and len(selected_rows) > 0:
+    # Безпечне перетворення
+    if isinstance(selected_rows, list):
+        selected_df = pd.DataFrame([selected_rows[0]])
+    else:
+        selected_df = pd.DataFrame(selected_rows)
+
+    st.success(f"✅ Вибрано: {selected_df.iloc[0].get('vollname_der_firma', 'N/A')}")
+else:
+    selected_df = pd.DataFrame()
+    st.info("👆 Клікни рядок таблиці")
+
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
