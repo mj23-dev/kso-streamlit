@@ -230,6 +230,8 @@ selected_df = pd.DataFrame(selected)
 
 if len(selected_df) > 0:
 
+    st.markdown(f"🔸**Adresse:** {selected_df.iloc[0]['vollname_der_firma']}")
+
     placeholder_col = st.empty()
     col_adr, col_form = placeholder_col.columns([0.5, 0.5])
     with col_adr:
