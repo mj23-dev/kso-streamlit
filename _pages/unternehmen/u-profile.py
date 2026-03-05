@@ -277,19 +277,13 @@ if len(selected_df) > 0:
     except:
         pass
 
-    st.markdown("🔸**Other details:**")
-    with st.spinner("⏳ Loading ..."):
-        # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
-        placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
-        time.sleep(2)  # штучна пауза
 
-        # 2. Наповнюємо вкладки
-        selected_uns_id = selected_df.iloc[0]['uns_id']
-
-        query = f"""
-                    SELECT wlup.pers_id, wp.vorname, wp.nachname, 
+    # @st.cache_data(ttl=300)  # Кеш 5 хв
+    def load_details_data(conn, selected_uns_id):
+        query1 = f"""
+                    SELECT wlup.pers_id, wp.vorname, wp.nachname,
                            concat_ws('; ', wlup.email1, wlup.email2, wlup.email3, wlup.email4, wlup.email5) as email,
-                           wlup.pers_kategorie, wlup.pers_position, wp.telefonnummer, 
+                           wlup.pers_kategorie, wlup.pers_position, wp.telefonnummer,
                            wp.pers_mitg, wp.pers_mitg_maxd, wp.aktivitaten_id, wp.akt_titel, wp.akt_maxd,
                            wu.kurzbezeichnung, wu.uns_id
                     FROM w_uns wu
@@ -297,136 +291,305 @@ if len(selected_df) > 0:
                     INNER JOIN main.w_pers wp ON wlup.pers_id = wp.pers_id
                     WHERE wu.uns_id = '{selected_uns_id}'
                     ORDER BY 3,2
-                    """
-        df1 = conn.execute(query).fetchdf()
+                    """  # твій запит1
+        df1 = conn.execute(query1).fetchdf()
 
-        query = f"""
+        query2 = f"""
                     SELECT distinct wv.*
-                      from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link, 
+                      from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link,
                                     wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
                                     wv.adr_full, wv.aktivitaten_id
-                                from main.w_veranstaltung wv 
-                                group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year, 
+                                from main.w_veranstaltung wv
+                                group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year,
                                         wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
                             ) wv
                     INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
                     WHERE wv2.uns_id = '{selected_uns_id}'
                     ORDER BY 1 desc
-                    """
-        df2 = conn.execute(query).fetchdf()
+                    """  # твій запит2
+        df2 = conn.execute(query2).fetchdf()
 
-        tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
-        with tab1:
-            # Поза межами spinner — вивід даних
-            dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
-            # обробляємо пусті дати
-            for col in df1.select_dtypes(include=['datetime']):
-                df1[col] = df1[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
-            # формуємо датафрейм
-            gb1 = GridOptionsBuilder.from_dataframe(df1)
-            gb1.configure_pagination(enabled=True, paginationAutoPageSize=False,
-                                     paginationPageSize=100)  # Add pagination
-            gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
-            # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
-            gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi,
-                                 maxWidth=150)
-            gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi,
-                                 maxWidth=150)
-            gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
-            gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
-            gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, maxWidth=150)
-            gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-            gb1.configure_column(field='pers_mitg', header_name='MG', filter=ag_grid.filters.multi, maxWidth=100)
-            gb1.configure_column(field='pers_mitg_maxd', header_name='Letzte MG Data',
-                                 type=["customDateTimeFormat"],
-                                 custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=120)
-            gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
-            gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi, minWidth=200)
-            gb1.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"],
-                                custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
-            gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi, width=300)
-            gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
+        return df1, df2
 
-            gb1.configure_grid_options(domLayout="normal")
+    st.markdown("🔸**Other details:**")
 
-            grid_options1 = gb1.build()
-            grid_options1["immutableData"] = False  # ✅ Критично для checkbox!
-            grid_response1 = AgGrid(
-                df1,
-                gridOptions=grid_options1,
-                # enable_enterprise_modules=True,
-                enable_enterprise_modules=False,
-                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-                data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-                pagination_page_size_selector=[10, 20, 50, 100],
-                height=dfheight1,  # = 7 rows
-                width='100%',
-                show_toolbar=True, show_search=False, show_download_button=False,
-                allow_unsafe_jscode=True,
-                # reload_data=True,
-                reload_data=False,
-                key="u-profile_det1_key"
-            )
+    # ✅ БЕЗ spinner + sleep
+    selected_uns_id = selected_df.iloc[0]['uns_id']
+    df1, df2 = load_details_data(conn, selected_uns_id)
 
-        with tab2:
-            dfheight2 = 0 if len(df2) == 0 else 40.7 * min(len(df2) + 3, 10)
-            # обробляємо пусті дати
-            for col in df2.select_dtypes(include=['datetime']):
-                df2[col] = df2[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
-            # формуємо датафрейм
-            gb2 = GridOptionsBuilder.from_dataframe(df2)
-            cell_renderer = JsCode(""" function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
-            gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
-            gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
-            gb2.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-            gb2.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
-            gb2.configure_column(field="agenda_link", headerName="Agenda link", width=100,
-                                cellRenderer=JsCode("""
-                    class UrlCellRenderer {
-                      init(params) {
-                        this.eGui = document.createElement('a');
-                        this.eGui.innerText = params.value;
-                        this.eGui.setAttribute('href', params.value);
-                        this.eGui.setAttribute('style', "text-decoration:none");
-                        this.eGui.setAttribute('target', "_blank");
-                      }
-                      getGui() {
-                        return this.eGui;
-                      }
-                    }
-                """)
-                                )
-            gb2.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
-            gb2.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
-            gb2.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
-            gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
-            gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
-            gb2.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
-            gb2.configure_grid_options(domLayout="normal")
+    # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
+    tab1, tab2 = st.tabs([f"Personen ({len(df1)})", f"Veranstaltung ({len(df2)})"])
 
-            grid_options2 = gb2.build()
-            grid_options2["immutableData"] = False  # ✅ Критично для checkbox!
+    with tab1:
+        # Поза межами spinner — вивід даних
+        dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
+        # обробляємо пусті дати
+        for col in df1.select_dtypes(include=['datetime']):
+            df1[col] = df1[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+        # формуємо датафрейм
+        gb1 = GridOptionsBuilder.from_dataframe(df1)
+        gb1.configure_pagination(enabled=True, paginationAutoPageSize=False,
+                                 paginationPageSize=100)  # Add pagination
+        gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+        # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
+        gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi,
+                             maxWidth=150)
+        gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi,
+                             maxWidth=150)
+        gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
+        gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
+        gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=ag_grid.filters.multi,
+                             maxWidth=100)
+        gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, maxWidth=150)
+        gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi,
+                             width=150)
+        gb1.configure_column(field='pers_mitg', header_name='MG', filter=ag_grid.filters.multi, maxWidth=100)
+        gb1.configure_column(field='pers_mitg_maxd', header_name='Letzte MG Data',
+                             type=["customDateTimeFormat"],
+                             custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=120)
+        gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
+        gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi,
+                             minWidth=200)
+        gb1.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"],
+                             custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
+        gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi,
+                             width=300)
+        gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
 
-            grid_response2 = AgGrid(
-                df2,
-                gridOptions=grid_options2,
-                # enable_enterprise_modules=True,
-                enable_enterprise_modules=False,
-                update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-                data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
-                pagination_page_size_selector=[20, 50, 100],
-                height=dfheight2,  # = 7 rows
-                width='100%',
-                show_toolbar=True, show_search=False, show_download_button=False,
-                allow_unsafe_jscode=True,
-                # reload_data=True,
-                reload_data = False,
-                fit_columns_on_grid_load=True,
-                key = "u-profile_det2_key"
-            )
+        gb1.configure_grid_options(domLayout="normal")
+
+        grid_options1 = gb1.build()
+        grid_options1["immutableData"] = False  # ✅ Критично для checkbox!
+        grid_response1 = AgGrid(
+            df1,
+            gridOptions=grid_options1,
+            # enable_enterprise_modules=True,
+            enable_enterprise_modules=False,
+            update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+            data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+            theme="blue",
+            # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+            pagination_page_size_selector=[10, 20, 50, 100],
+            height=dfheight1,  # = 7 rows
+            width='100%',
+            show_toolbar=True, show_search=False, show_download_button=False,
+            allow_unsafe_jscode=True,
+            # reload_data=True,
+            reload_data=False,
+            key="u-profile_det1_key"
+        )
+
+    with tab2:
+        dfheight2 = 0 if len(df2) == 0 else 40.7 * min(len(df2) + 3, 10)
+        # обробляємо пусті дати
+        for col in df2.select_dtypes(include=['datetime']):
+            df2[col] = df2[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+        # формуємо датафрейм
+        gb2 = GridOptionsBuilder.from_dataframe(df2)
+        cell_renderer = JsCode(
+            """ function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
+        gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
+        gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+        gb2.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+        gb2.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left',
+                             filter=ag_grid.filters.multi, width=250)
+        gb2.configure_column(field="agenda_link", headerName="Agenda link", width=100,
+                             cellRenderer=JsCode("""
+                class UrlCellRenderer {
+                  init(params) {
+                    this.eGui = document.createElement('a');
+                    this.eGui.innerText = params.value;
+                    this.eGui.setAttribute('href', params.value);
+                    this.eGui.setAttribute('style', "text-decoration:none");
+                    this.eGui.setAttribute('target', "_blank");
+                  }
+                  getGui() {
+                    return this.eGui;
+                  }
+                }
+            """)
+                             )
+        gb2.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
+        gb2.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
+        gb2.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
+        gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
+        gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
+        gb2.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
+        gb2.configure_grid_options(domLayout="normal")
+
+        grid_options2 = gb2.build()
+        grid_options2["immutableData"] = False  # ✅ Критично для checkbox!
+
+        grid_response2 = AgGrid(
+            df2,
+            gridOptions=grid_options2,
+            # enable_enterprise_modules=True,
+            enable_enterprise_modules=False,
+            update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+            data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+            theme="blue",
+            # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+            pagination_page_size_selector=[20, 50, 100],
+            height=dfheight2,  # = 7 rows
+            width='100%',
+            show_toolbar=True, show_search=False, show_download_button=False,
+            allow_unsafe_jscode=True,
+            # reload_data=True,
+            reload_data=False,
+            fit_columns_on_grid_load=True,
+            key="u-profile_det2_key"
+        )
+
+
+    # with st.spinner("⏳ Loading ..."):
+    #     # 1. Очистити попередній DataFrame (опціонально — для візуального ефекту)
+    #     placeholder = st.empty()  # створюємо місце, де з'явиться таблиця
+    #     time.sleep(2)  # штучна пауза
+    #
+    #     # 2. Наповнюємо вкладки
+    #     selected_uns_id = selected_df.iloc[0]['uns_id']
+    #
+    #     query = f"""
+    #                 SELECT wlup.pers_id, wp.vorname, wp.nachname,
+    #                        concat_ws('; ', wlup.email1, wlup.email2, wlup.email3, wlup.email4, wlup.email5) as email,
+    #                        wlup.pers_kategorie, wlup.pers_position, wp.telefonnummer,
+    #                        wp.pers_mitg, wp.pers_mitg_maxd, wp.aktivitaten_id, wp.akt_titel, wp.akt_maxd,
+    #                        wu.kurzbezeichnung, wu.uns_id
+    #                 FROM w_uns wu
+    #                 INNER JOIN main.w_links_uns_pers wlup ON wu.uns_id = wlup.uns_id
+    #                 INNER JOIN main.w_pers wp ON wlup.pers_id = wp.pers_id
+    #                 WHERE wu.uns_id = '{selected_uns_id}'
+    #                 ORDER BY 3,2
+    #                 """
+    #     df1 = conn.execute(query).fetchdf()
+    #
+    #     query = f"""
+    #                 SELECT distinct wv.*
+    #                   from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link,
+    #                                 wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
+    #                                 wv.adr_full, wv.aktivitaten_id
+    #                             from main.w_veranstaltung wv
+    #                             group by wv.datum_titel, wv.aktivitaten_id, wv.agenda_link, wv.format, wv.datum_bis_year,
+    #                                     wv.bundesland, wv.akt_org, wv.akt_spn, wv.adr_full
+    #                         ) wv
+    #                 INNER JOIN main.w_veranstaltung wv2 on wv.aktivitaten_id = wv2.aktivitaten_id
+    #                 WHERE wv2.uns_id = '{selected_uns_id}'
+    #                 ORDER BY 1 desc
+    #                 """
+    #     df2 = conn.execute(query).fetchdf()
+    #
+    #     tab1, tab2 = placeholder.tabs([f"Personen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
+    #     with tab1:
+    #         # Поза межами spinner — вивід даних
+    #         dfheight1 = 0 if len(df1) == 0 else 40.7 * min(len(df1) + 3, 10)
+    #         # обробляємо пусті дати
+    #         for col in df1.select_dtypes(include=['datetime']):
+    #             df1[col] = df1[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+    #         # формуємо датафрейм
+    #         gb1 = GridOptionsBuilder.from_dataframe(df1)
+    #         gb1.configure_pagination(enabled=True, paginationAutoPageSize=False,
+    #                                  paginationPageSize=100)  # Add pagination
+    #         gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+    #         # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
+    #         gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi,
+    #                              maxWidth=150)
+    #         gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi,
+    #                              maxWidth=150)
+    #         gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
+    #         gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
+    #         gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=ag_grid.filters.multi, maxWidth=100)
+    #         gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, maxWidth=150)
+    #         gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
+    #         gb1.configure_column(field='pers_mitg', header_name='MG', filter=ag_grid.filters.multi, maxWidth=100)
+    #         gb1.configure_column(field='pers_mitg_maxd', header_name='Letzte MG Data',
+    #                              type=["customDateTimeFormat"],
+    #                              custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=120)
+    #         gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
+    #         gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi, minWidth=200)
+    #         gb1.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"],
+    #                             custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
+    #         gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi, width=300)
+    #         gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
+    #
+    #         gb1.configure_grid_options(domLayout="normal")
+    #
+    #         grid_options1 = gb1.build()
+    #         grid_options1["immutableData"] = False  # ✅ Критично для checkbox!
+    #         grid_response1 = AgGrid(
+    #             df1,
+    #             gridOptions=grid_options1,
+    #             # enable_enterprise_modules=True,
+    #             enable_enterprise_modules=False,
+    #             update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    #             data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+    #             theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+    #             pagination_page_size_selector=[10, 20, 50, 100],
+    #             height=dfheight1,  # = 7 rows
+    #             width='100%',
+    #             show_toolbar=True, show_search=False, show_download_button=False,
+    #             allow_unsafe_jscode=True,
+    #             # reload_data=True,
+    #             reload_data=False,
+    #             key="u-profile_det1_key"
+    #         )
+    #
+    #     with tab2:
+    #         dfheight2 = 0 if len(df2) == 0 else 40.7 * min(len(df2) + 3, 10)
+    #         # обробляємо пусті дати
+    #         for col in df2.select_dtypes(include=['datetime']):
+    #             df2[col] = df2[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
+    #         # формуємо датафрейм
+    #         gb2 = GridOptionsBuilder.from_dataframe(df2)
+    #         cell_renderer = JsCode(""" function(params) {return `<a href=${params.value} target="_blank">${params.value}</a>`} """)
+    #         gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
+    #         gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
+    #         gb2.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
+    #         gb2.configure_column(field='datum_titel', header_name='Datum | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
+    #         gb2.configure_column(field="agenda_link", headerName="Agenda link", width=100,
+    #                             cellRenderer=JsCode("""
+    #                 class UrlCellRenderer {
+    #                   init(params) {
+    #                     this.eGui = document.createElement('a');
+    #                     this.eGui.innerText = params.value;
+    #                     this.eGui.setAttribute('href', params.value);
+    #                     this.eGui.setAttribute('style', "text-decoration:none");
+    #                     this.eGui.setAttribute('target', "_blank");
+    #                   }
+    #                   getGui() {
+    #                     return this.eGui;
+    #                   }
+    #                 }
+    #             """)
+    #                             )
+    #         gb2.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
+    #         gb2.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
+    #         gb2.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
+    #         gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
+    #         gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
+    #         gb2.configure_column(field='adr_full', header_name='Adress', filter=ag_grid.filters.multi, width=300)
+    #         gb2.configure_grid_options(domLayout="normal")
+    #
+    #         grid_options2 = gb2.build()
+    #         grid_options2["immutableData"] = False  # ✅ Критично для checkbox!
+    #
+    #         grid_response2 = AgGrid(
+    #             df2,
+    #             gridOptions=grid_options2,
+    #             # enable_enterprise_modules=True,
+    #             enable_enterprise_modules=False,
+    #             update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
+    #             data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
+    #             theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+    #             pagination_page_size_selector=[20, 50, 100],
+    #             height=dfheight2,  # = 7 rows
+    #             width='100%',
+    #             show_toolbar=True, show_search=False, show_download_button=False,
+    #             allow_unsafe_jscode=True,
+    #             # reload_data=True,
+    #             reload_data = False,
+    #             fit_columns_on_grid_load=True,
+    #             key = "u-profile_det2_key"
+    #         )
 
         # with tab2:
         #     selected_uns_id = selected_df.iloc[0]['uns_id']
