@@ -123,7 +123,7 @@ grid_response = AgGrid(
     enable_enterprise_modules=True,
     # enable_enterprise_modules=False,  # ✅ False для Cloud!
     # update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
-    update_mode="SELECTION_CHANGED",  # ✅
+    update_mode="GRID_CHANGED",  # ✅
     # update_on=["selectionChanged"],  # або ["selectionChanged", "modelUpdated", "gridChanged"]
     data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
     fit_columns_on_grid_load=False,
@@ -136,10 +136,15 @@ grid_response = AgGrid(
     header_checkbox_selection_filtered_only=True,
     show_toolbar=True, show_search=False, show_download_button=False,
     allow_unsafe_jscode=True,
-    # reload_data=False,
+    reload_data=False,
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
+
+st.write("🔍 DEBUG:")
+st.write("grid_response =", grid_response)
+st.write("selected_rows =", grid_response['selected_rows'])
+st.write("Тип:", type(grid_response['selected_rows']))
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
@@ -233,8 +238,6 @@ st.write("!!!Test - Selected:", grid_response['selected_rows'])
 if len(selected_df) > 0:
 
     st.markdown(f"🔸**Voller Name:** {selected_df.iloc[0]['vollname_der_firma']}")
-
-    # st.rerun()  # ✅ ПРИМУСОВИЙ RERUN для всіх!
 
     placeholder_col = st.empty()
     col_adr, col_form = placeholder_col.columns([0.5, 0.5])
