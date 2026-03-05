@@ -231,7 +231,6 @@ selected_df = pd.DataFrame(selected)
 if len(selected_df) > 0:
 
     st.markdown(f"🔸**Voller Name:** {selected_df.iloc[0]['vollname_der_firma']}")
-    st.dataframe(selected_df, use_container_width=True)
 
     # st.rerun()  # ✅ ПРИМУСОВИЙ RERUN для всіх!
 
@@ -324,6 +323,10 @@ if len(selected_df) > 0:
 
     # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
     tab1, tab2 = st.tabs([f"Personen ({len(df1)})", f"Veranstaltung ({len(df2)})"])
+
+    st.dataframe(df1, use_container_width=True)
+
+    st.dataframe(df2, use_container_width=True)
 
     with tab1:
         # Поза межами spinner — вивід даних
