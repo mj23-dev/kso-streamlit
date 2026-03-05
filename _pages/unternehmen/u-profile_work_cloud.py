@@ -355,8 +355,8 @@ if len(selected_df) > 0:
             grid_response1 = AgGrid(
                 df1,
                 gridOptions=grid_options1,
-                enable_enterprise_modules=True,
-                # enable_enterprise_modules=False,
+                # enable_enterprise_modules=True,
+                enable_enterprise_modules=False,
                 update_mode="GRID_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
                 theme="blue",
