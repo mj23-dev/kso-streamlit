@@ -227,7 +227,7 @@ with col_right:
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
-# st.write("Selected (!!!Test:", grid_response['selected_rows'])
+st.write("!!!Test - Selected:", grid_response['selected_rows'])
 
 if len(selected_df) > 0:
 
