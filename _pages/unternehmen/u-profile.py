@@ -114,8 +114,9 @@ gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid
 
 # Додай у GridOptionsBuilder:
 gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
+gb.configure_selection('single')
 grid_options = gb.build()
-grid_options["immutableData"] = False  # ✅ Критично для checkbox
+# grid_options["immutableData"] = False  # ✅ Критично для checkbox
 
 grid_response = AgGrid(
     df,
@@ -140,11 +141,6 @@ grid_response = AgGrid(
     # key=f"grid_{datetime.now().timestamp()}" if st.session_state.get("reload_grid") else "grid_default"
     key=st.session_state["reset_grid_key"]
 )
-
-st.write("🔍 DEBUG:")
-st.write("grid_response =", grid_response)
-st.write("selected_rows =", grid_response['selected_rows'])
-st.write("Тип:", type(grid_response['selected_rows']))
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
