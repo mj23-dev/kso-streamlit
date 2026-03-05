@@ -359,15 +359,15 @@ if len(selected_df) > 0:
                 enable_enterprise_modules=False,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="blue",
-                # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+                theme="blue", # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
                 pagination_page_size_selector=[10, 20, 50, 100],
                 height=dfheight1,  # = 7 rows
                 width='100%',
                 show_toolbar=True, show_search=False, show_download_button=False,
                 allow_unsafe_jscode=True,
                 # reload_data=True,
-                reload_data=False
+                reload_data=False,
+                key="u-profile_det1_key"
             )
 
         with tab2:
@@ -416,7 +416,7 @@ if len(selected_df) > 0:
                 enable_enterprise_modules=False,
                 update_mode="SELECTION_CHANGED",  # options -> GRID_CHANGED, SELECTION_CHANGED, MODEL_CHANGED
                 data_return_mode="FILTERED",  # options ->AS_INPUT, FILTERED
-                theme="streamlit",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
+                theme="blue",  # Add theme color to the table Available options: ['streamlit', 'light', 'dark', 'blue', 'fresh', 'material', 'alpine', 'balham']
                 pagination_page_size_selector=[20, 50, 100],
                 height=dfheight2,  # = 7 rows
                 width='100%',
@@ -425,6 +425,7 @@ if len(selected_df) > 0:
                 # reload_data=True,
                 reload_data = False,
                 fit_columns_on_grid_load=True,
+                key = "u-profile_det2_key"
             )
 
         # with tab2:
