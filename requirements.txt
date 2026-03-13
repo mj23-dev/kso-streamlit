@@ -9,3 +9,4 @@ requests
 pyzipper
 gdown
 itables
+IPython
