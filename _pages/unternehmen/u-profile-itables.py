@@ -9,7 +9,7 @@ from itables.streamlit import interactive_table
 from itables import to_html_datatable
 from streamlit.components.v1 import html
 
-itables.init_notebook_mode(connected=True)
+# itables.init_notebook_mode(connected=True)
 
 # Описуємо CSS прямо всередині параметра style
 # Це додасть стилі безпосередньо в тег <style> всередині iframe таблиці
