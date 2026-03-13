@@ -9,6 +9,29 @@ from st_aggrid.shared import JsCode
 from reflex_ag_grid import ag_grid
 from itables.streamlit import interactive_table
 
+# 🔥 НАЙПЕРШИЙ КОД після імпортів
+if "show_details" not in st.session_state:
+    st.session_state.show_details = False
+    st.session_state.selected_uns_id = None
+
+# 🔥 РЕЖИМ ДЕТАЛІВ
+if st.session_state.show_details and st.session_state.selected_uns_id:
+    uns_id_val = st.session_state.selected_uns_id
+    st.title(f"🏢 ДЕТАЛІ: {uns_id_val}")
+
+    conn = st.session_state.get("conn")
+    if conn:
+        query = f"SELECT * FROM w_uns WHERE uns_id = '{uns_id_val}'"
+        df_company = conn.execute(query).fetchdf()
+        st.dataframe(df_company, use_container_width=True)
+        st.success("✅ Деталі завантажено!")
+
+    if st.button("🔙 Список компаній", use_container_width=True):
+        st.session_state.show_details = False
+        st.session_state.selected_uns_id = None
+        st.rerun()
+    st.stop()
+
 # === Підключення до бази ===
 conn = st.session_state.get("conn")
 if conn is None:
@@ -28,6 +51,7 @@ st.subheader("🏢 Unternehmen (Сompanies)")
 # === 1. Завантаження даних
 query = load_sql(f"{title}/sel_profile.sql")
 df = conn.execute(query).fetchdf()
+
 # обробляємо пусті дати
 for col in df.select_dtypes(include=['datetime']):
     df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
@@ -61,12 +85,38 @@ cell_renderer = JsCode("""
 gb.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100) #Add pagination
 # gb.configure_side_bar(filters_panel=True, columns_panel=True) # Add a sidebar
 gb.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters') # Add a sidebar
-# gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
-gb.configure_selection(selection_mode="single", use_checkbox=False, rowMultiSelectWithClick=True)
+gb.configure_selection(selection_mode="single", use_checkbox=True) # Enable single selection (multiple)
+# gb.configure_selection(selection_mode="single", use_checkbox=False, rowMultiSelectWithClick=True)
 
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
 gb.configure_column(field='vollname_der_firma', header_name='Voller Name', pinned='left', filter=ag_grid.filters.multi, headerCheckboxSelection = True)
+
+gb.configure_column(
+    field='details_link',
+    headerName='🔗',
+    width=80,
+    cellRenderer=JsCode("""
+        class DetailsLinkRenderer {
+            init(params) {
+                this.eGui = document.createElement('button');
+                this.eGui.innerHTML = '📋';
+                this.eGui.style.background = 'none';
+                this.eGui.style.border = 'none';
+                this.eGui.style.cursor = 'pointer';
+                this.eGui.style.color = '#1f77b4';
+                this.eGui.style.padding = '5px';
+                this.eGui.onclick = () => {
+                    window.parent.postMessage({type: 'show_details', uns_id: params.data.uns_id}, '*');
+                };
+            }
+            getGui() { return this.eGui; }
+        }
+    """)
+)
+
+
+
 gb.configure_column(field='uns_id', header_name='Id', filter=ag_grid.filters.multi)
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number)
 gb.configure_column(
@@ -114,11 +164,46 @@ gb.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filt
 gb.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
 
+# У gb.configure_column() для основної таблиці
+# gb.configure_column(
+#     field='details_link',
+#     headerName='🔗 Деталі',
+#     width=100,
+#     cellRenderer=JsCode("""
+#         class DetailsLinkRenderer {
+#             init(params) {
+#                 this.eGui = document.createElement('a');
+#                 this.eGui.innerHTML = '📋';
+#                 this.eGui.href = `/u-profile?uns_id=${params.data.uns_id}`;
+#                 this.eGui.target = '_blank';
+#                 this.eGui.style.cursor = 'pointer';
+#                 this.eGui.style.padding = '5px';
+#                 this.eGui.style.color = '#1f77b4';
+#                 this.eGui.style.textDecoration = 'none';
+#             }
+#             getGui() {
+#                 return this.eGui;
+#             }
+#         }
+#     """)
+# )
+
 # Додай у GridOptionsBuilder:
 gb.configure_grid_options(domLayout="normal")  # ✅ Стабілізація
 gb.configure_selection('single')
 grid_options = gb.build()
 # grid_options["immutableData"] = False  # ✅ Критично для checkbox
+
+components.html("""
+<script>
+window.addEventListener('message', function(event) {
+    if (event.data.type === 'show_details') {
+        parent.document.querySelector('iframe').contentWindow.postMessage(event.data, '*');
+    }
+});
+</script>
+""", height=0)
+
 
 grid_response = AgGrid(
     df,
@@ -144,19 +229,10 @@ grid_response = AgGrid(
     key=st.session_state["reset_grid_key"]
 )
 
-selected_rows = grid_response.get('selected_rows', [])
-if selected_rows is not None and len(selected_rows) > 0:
-    # Безпечне перетворення
-    if isinstance(selected_rows, list):
-        selected_df = pd.DataFrame([selected_rows[0]])
-    else:
-        selected_df = pd.DataFrame(selected_rows)
-
-    st.success(f"✅ Вибрано: {selected_df.iloc[0].get('vollname_der_firma', 'N/A')}")
-else:
-    selected_df = pd.DataFrame()
-    st.info("👆 Клікни рядок таблиці")
-
+if st.button("📋 Показати деталі першої вибраної", use_container_width=True):
+    selected_row = grid_response.get('selected_rows', [{}])[0]
+    st.session_state.show_details = True
+    st.session_state.selected_uns_id = selected_row
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
@@ -244,8 +320,7 @@ with col_right:
 # === 6. Деталі вибраного рядка
 selected = grid_response['selected_rows']
 selected_df = pd.DataFrame(selected)
-st.write("!!!Test - Selected:", grid_response['selected_rows'])
-
+# st.write("!!!Test - Selected:", grid_response['selected_rows'])
 
 if len(selected_df) > 0:
 

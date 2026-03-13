@@ -21,7 +21,6 @@ else:
 
 # === КРОК 2: Підключення до тимчасового duckdb ===
 conn, db_path = connect_temp_duckdb(uploaded_file)
-
 st.session_state["conn"] = conn
 st.session_state["db_path"] = db_path
 
