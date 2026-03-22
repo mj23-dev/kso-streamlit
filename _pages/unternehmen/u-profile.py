@@ -9,28 +9,28 @@ from st_aggrid.shared import JsCode
 from reflex_ag_grid import ag_grid
 from itables.streamlit import interactive_table
 
-# 🔥 НАЙПЕРШИЙ КОД після імпортів
-if "show_details" not in st.session_state:
-    st.session_state.show_details = False
-    st.session_state.selected_uns_id = None
-
-# 🔥 РЕЖИМ ДЕТАЛІВ
-if st.session_state.show_details and st.session_state.selected_uns_id:
-    uns_id_val = st.session_state.selected_uns_id
-    st.title(f"🏢 ДЕТАЛІ: {uns_id_val}")
-
-    conn = st.session_state.get("conn")
-    if conn:
-        query = f"SELECT * FROM w_uns WHERE uns_id = '{uns_id_val}'"
-        df_company = conn.execute(query).fetchdf()
-        st.dataframe(df_company, use_container_width=True)
-        st.success("✅ Деталі завантажено!")
-
-    if st.button("🔙 Список компаній", use_container_width=True):
-        st.session_state.show_details = False
-        st.session_state.selected_uns_id = None
-        st.rerun()
-    st.stop()
+# # 🔥 НАЙПЕРШИЙ КОД після імпортів
+# if "show_details" not in st.session_state:
+#     st.session_state.show_details = False
+#     st.session_state.selected_uns_id = None
+#
+# # 🔥 РЕЖИМ ДЕТАЛІВ
+# if st.session_state.show_details and st.session_state.selected_uns_id:
+#     uns_id_val = st.session_state.selected_uns_id
+#     st.title(f"🏢 ДЕТАЛІ: {uns_id_val}")
+#
+#     conn = st.session_state.get("conn")
+#     if conn:
+#         query = f"SELECT * FROM w_uns WHERE uns_id = '{uns_id_val}'"
+#         df_company = conn.execute(query).fetchdf()
+#         st.dataframe(df_company, use_container_width=True)
+#         st.success("✅ Деталі завантажено!")
+#
+#     if st.button("🔙 Список компаній", use_container_width=True):
+#         st.session_state.show_details = False
+#         st.session_state.selected_uns_id = None
+#         st.rerun()
+#     st.stop()
 
 # === Підключення до бази ===
 conn = st.session_state.get("conn")
@@ -229,10 +229,10 @@ grid_response = AgGrid(
     key=st.session_state["reset_grid_key"]
 )
 
-if st.button("📋 Показати деталі першої вибраної", use_container_width=True):
-    selected_row = grid_response.get('selected_rows', [{}])[0]
-    st.session_state.show_details = True
-    st.session_state.selected_uns_id = selected_row
+# if st.button("📋 Показати деталі першої вибраної", use_container_width=True):
+#     selected_row = grid_response.get('selected_rows', [{}])[0]
+#     st.session_state.show_details = True
+#     st.session_state.selected_uns_id = selected_row
 
 filtered_df = pd.DataFrame(grid_response['data'])
 cnt_filtered = len(filtered_df)
@@ -413,14 +413,14 @@ if len(selected_df) > 0:
     selected_uns_id = selected_df.iloc[0]['uns_id']
     df1, df2 = load_details_data(conn, selected_uns_id)
 
-    interactive_table(df1,
-                      caption='df1',
-                      select=True,
-                      # selected_rows=[0, 1, 2, 100, 207],
-                      buttons=['copyHtml5', 'csvHtml5', 'excelHtml5', 'colvis'])
-
-    st.dataframe(df1, use_container_width=True)
-    st.dataframe(df2, use_container_width=True)
+    # interactive_table(df1,
+    #                   caption='df1',
+    #                   select=True,
+    #                   # selected_rows=[0, 1, 2, 100, 207],
+    #                   buttons=['copyHtml5', 'csvHtml5', 'excelHtml5', 'colvis'])
+    #
+    # st.dataframe(df1, use_container_width=True)
+    # st.dataframe(df2, use_container_width=True)
 
     # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
     tab1, tab2 = st.tabs([f"Personen ({len(df1)})", f"Veranstaltung ({len(df2)})"])
