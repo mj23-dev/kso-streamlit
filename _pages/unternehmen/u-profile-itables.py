@@ -174,6 +174,7 @@ if selection and "selected_rows" in selection:
         # st.write(f"Ви вибрали {len(selected_indices)} рядків:")
         # st.dataframe(df.iloc[selected_indices])
     else:
+        selected_indices = []
         st.info("Будь ласка, виберіть рядки в таблиці вище.")
 
 # st.write(selection)
