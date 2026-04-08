@@ -176,7 +176,8 @@ if selection and "selected_rows" in selection:
     else:
         selected_indices = []
         st.info("Будь ласка, виберіть рядки в таблиці вище.")
-
+else:
+    selected_indices = []
 # st.write(selection)
 
 selected_df = df.iloc[selected_indices]
