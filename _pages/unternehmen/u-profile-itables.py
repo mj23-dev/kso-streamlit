@@ -180,7 +180,10 @@ else:
     selected_indices = []
 # st.write(selection)
 
-selected_df = df.iloc[selected_indices]
+try:
+    selected_df = df.iloc[selected_indices]
+except:
+    selected_df = None
 if len(selected_df) > 0:
 
     st.markdown(f"🔸**Voller Name:** {selected_df.iloc[0]['vollname_der_firma']}")
