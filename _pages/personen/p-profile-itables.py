@@ -5,77 +5,17 @@ from datetime import datetime
 from utils.io import load_sql
 import itables
 from itables.streamlit import interactive_table
-
 from itables import to_html_datatable
 from streamlit.components.v1 import html
 
-itables.options.warn_on_undocumented_option=False
 
-# itables.init_notebook_mode(connected=True)
+st.write(st.session_state.keys())
 
-# Описуємо CSS прямо всередині параметра style
-# Це додасть стилі безпосередньо в тег <style> всередині iframe таблиці
-custom_css = """
-table.dataTable thead th {
-    background-color: #2E86C1 !important;
-    color: white !important;
-    font-size: 18px !important;
-    font-family: sans-serif !important;
-}
-table.dataTable tbody td {
-    font-size: 18px !important;
-    color: #333 !important;
-}
-"""
-
-itables.init_notebook_mode()
-itables.options.maxBytes = 0 #show all rows from sql
-itables.options.column_filters = "footer"
-
-# st.markdown("""
-# <style>
-#     /* Фіксуємо макет усієї таблиці */
-#     .itables table {
-#         table-layout: fixed !important;
-#         width: 100% !important;
-#         font-family: 'Courier New', monospace;
-#         font-size: 14px;
-#     }
-#
-#     /* Примусово обрізаємо контент у 4-й колонці (nth-child(4)) */
-#     /* Якщо у вас відображається індекс Pandas, спробуйте nth-child(5) */
-#     .itables td:nth-child(3) {
-#         width: 120px !important;
-#         max-width: 120px !important;
-#         overflow: hidden !important;
-#         text-overflow: ellipsis !important;
-#         white-space: nowrap !important;
-#     }
-# </style>
-# """, unsafe_allow_html=True)
-
-# Приклад таблиці
-# df = pd.DataFrame({'Назва': ['Товар А', 'Товар Б'], 'Ціна': [100, 200]})
-
-# html(
-#     to_html_datatable(
-#         df,
-#         layout={"top1": "searchPanes"},
-#         searchPanes={"layout": "columns-3", "cascadePanes": True},
-#     ),
-#     height=960,  # adjust manually
-# )
-
-# interactive_table(
-#     df,
-#     style=custom_css,
-#     classes="display nowrap",
-#     width="100%"
-# )
-
-# from itables import to_html_datatable
-# from streamlit.components.v1 import html
-# itables.init_notebook_mode()
+if 'initialized' not in st.session_state:
+    itables.options.warn_on_undocumented_option = False
+    itables.options.maxBytes = 0
+    itables.options.column_filters = "footer"
+    st.session_state['initialized'] = True
 
 # === Підключення до бази ===
 conn = st.session_state.get("conn")
@@ -84,11 +24,11 @@ if conn is None:
     st.stop()
 
 # === Видалення прапорця перезавантаження після ререндеру ===
-if "reload_grid" in st.session_state:
-    del st.session_state["reload_grid"]
-
-if "reset_grid_key" not in st.session_state:
-    st.session_state["reset_grid_key"] = "grid_default"
+# if "reload_grid" in st.session_state:
+#     del st.session_state["reload_grid"]
+#
+# if "reset_grid_key" not in st.session_state:
+#     st.session_state["reset_grid_key"] = "grid_default"
 
 title = 'personen'
 st.subheader("👤 Personen (Persons)")
@@ -102,37 +42,46 @@ for col in df.select_dtypes(include=['datetime']):
     df[col] = df[col].apply(lambda x: x.strftime('%Y-%m-%d') if pd.notnull(x) else '')
 
 # 2. Ваша таблиця з виправленнями
+# selection = interactive_table(
+#     df,
+#     key="main_table_person_data",  # Додайте цей рядок!
+#     caption='Personen',
+#     buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
+#     classes="display stripe cell-border order-column",
+#     # classes="display nowrap compact cell-border",
+#     scrollY="700px",
+#     scrollCollapse=True,
+#     paging=True,
+#     # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
+#     # autoWidth=False,
+#     # eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
+#     fixedColumns={"start": 1},
+#     columnDefs=[
+#         # {"width": "5%", "targets": [2,3,4,5]},
+#         # {"width": "100px", "targets": [0]},
+#         # {"width": "50px", "targets": [2]},
+#         # {"width": "5px", "targets": [2]},
+#         {"className": "dt-right", "targets": [2]},
+#         # {"className": "dt-left", "targets": "_all"},
+#     ],
+#     style="width:100%;margin:auto",
+#     # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
+#     scrollX=True,
+#     lengthMenu=[10, 50, 100, 1000, 5000],
+#     pageLength=100,
+#     # select=True,
+#     select=False,
+#     footer=True,
+#     columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
+#     ordering={"indicators": False, "handler": True},
+#     allow_html=True,
+# )
+
 selection = interactive_table(
     df,
-    caption='Personen',
-    buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
-    classes="display stripe cell-border order-column",
-    # classes="display nowrap compact cell-border",
-    scrollY="700px",
-    scrollCollapse=True,
+    key="test_table",
     paging=True,
-    # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
-    autoWidth=False,
-    eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
-    fixedColumns={"start": 1},
-    columnDefs=[
-        # {"width": "5%", "targets": [2,3,4,5]},
-        # {"width": "100px", "targets": [0]},
-        # {"width": "50px", "targets": [2]},
-        # {"width": "5px", "targets": [2]},
-        {"className": "dt-right", "targets": [2]},
-        # {"className": "dt-left", "targets": "_all"},
-    ],
-    style="width:100%;margin:auto",
-    # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
-    scrollX=True,
-    lengthMenu=[10, 50, 100, 1000, 5000],
-    pageLength=100,
-    select=True,
-    footer=True,
-    columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
-    ordering={"indicators": False, "handler": True},
-    allow_html=True,
+    scrollX=True
 )
 
 # Перевіряємо, чи є вибір і чи він не порожній
@@ -164,12 +113,8 @@ try:
 except:
     selected_df = None
 
-if len(selected_df) > 0:
-
-    sst.markdown("🔸**Details:**")
-
-    # @st.cache_data(ttl=300)  # Кеш 5 хв
-    def load_details_data(conn, selected_pers_id):
+@st.cache_data(ttl=300)  # Кеш 5 хв
+def load_details_data(_conn, selected_pers_id):
         query1 = f"""
                     SELECT wu.vollname_der_firma, wlup.pers_position, wu.uns_id, 
                             case when wu.seite not like 'http%' and wu.seite not like 'www%' then null else wu.seite end as seite, 
@@ -206,83 +151,78 @@ if len(selected_df) > 0:
 
         return df1, df2
 
-    st.markdown("🔸**Other details:**")
-
-    # ✅ БЕЗ spinner + sleep
-    selected_pers_id = selected_df.iloc[0]['pers_id']
-    df1, df2 = load_details_data(conn, selected_pers_id)
-
-    # interactive_table(df1,
-    #                   caption='df1',
-    #                   select=True,
-    #                   # selected_rows=[0, 1, 2, 100, 207],
-    #                   buttons=['copyHtml5', 'csvHtml5', 'excelHtml5', 'colvis'])
-    #
-    # st.dataframe(df1, use_container_width=True)
-    # st.dataframe(df2, use_container_width=True)
-
-    # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
-    tab1, tab2 = st.tabs([f"Unternehmen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
-
-    with tab1:
-        interactive_table(
-            df1,
-            # caption='Unternehmen',
-            # buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
-            classes="display stripe cell-border order-column",
-            # classes="display nowrap compact cell-border",
-            scrollY="700px",
-            scrollCollapse=True,
-            paging=True,
-            # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
-            autoWidth=False,
-            eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
-            fixedColumns={"start": 3},
-            style="width:100%;margin:auto",
-            # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
-            scrollX=True,
-            pageLength=10,
-            select=False,
-            # footer=True,
-            columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
-            ordering={"indicators": False, "handler": True},
-            allow_html=True,
-        )
-
-    with tab2:
-        interactive_table(
-            df2,
-            # caption='Unternehmen',
-            # buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
-            classes="display stripe cell-border order-column",
-            # classes="display nowrap compact cell-border",
-            scrollY="700px",
-            scrollCollapse=True,
-            paging=True,
-            # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
-            autoWidth=False,
-            eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
-            fixedColumns={"start": 1},
-            style="width:100%;margin:auto",
-            # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
-            scrollX=True,
-            pageLength=10,
-            select=True,
-            # footer=True,
-            columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
-            ordering={"indicators": False, "handler": True},
-            allow_html=True,
-            columnDefs=[
-                {
-                    "targets": [1],
-                    "render": itables.JavascriptCode("""
-            function (data, type, row) {
-                if (type === 'display' && 'www') {
-                    return '<a href="' + data + '" target="_blank">' + 'www' + '</a>';
-                }
-                return data;
-            }
-        """)
-                }
-            ],
-        )
+# if len(selected_df) > 0:
+#
+#     sst.markdown("🔸**Details:**")
+#
+#     st.markdown("🔸**Other details:**")
+#
+#     # ✅ БЕЗ spinner + sleep
+#     selected_pers_id = selected_df.iloc[0]['pers_id']
+#     df1, df2 = load_details_data(conn, selected_pers_id)
+#
+#     # ✅ СТАТИЧНІ ТАБЛИЦІ (без placeholder)
+#     tab1, tab2 = st.tabs([f"Unternehmen ({str(len(df1))})", f"Veranstaltung ({str(len(df2))})"])
+#
+#     with tab1:
+#         interactive_table(
+#             df1,
+#             # caption='Unternehmen',
+#             # buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
+#             classes="display stripe cell-border order-column",
+#             # classes="display nowrap compact cell-border",
+#             scrollY="700px",
+#             scrollCollapse=True,
+#             paging=True,
+#             # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
+#             autoWidth=False,
+#             eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
+#             fixedColumns={"start": 3},
+#             style="width:100%;margin:auto",
+#             # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
+#             scrollX=True,
+#             pageLength=10,
+#             select=False,
+#             # footer=True,
+#             columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
+#             ordering={"indicators": False, "handler": True},
+#             allow_html=True,
+#         )
+#
+#     with tab2:
+#         interactive_table(
+#             df2,
+#             # caption='Unternehmen',
+#             # buttons=["pageLength", 'copyHtml5', 'excelHtml5', 'colvis'],
+#             classes="display stripe cell-border order-column",
+#             # classes="display nowrap compact cell-border",
+#             scrollY="700px",
+#             scrollCollapse=True,
+#             paging=True,
+#             # Додаємо autoWidth=False, щоб columnDefs мали пріоритет
+#             autoWidth=False,
+#             eval_functions=True,  # ВАЖЛИВО: дозволяє JS-функції
+#             fixedColumns={"start": 1},
+#             style="width:100%;margin:auto",
+#             # scrollX дозволяє гортати таблицю вбік, якщо 120px * к-сть стовпців > ширини екрана
+#             scrollX=True,
+#             pageLength=10,
+#             select=True,
+#             # footer=True,
+#             columnControl=["order", ["orderAsc", "orderDesc", "orderClear", "search", "searchClear", 'searchList']],
+#             ordering={"indicators": False, "handler": True},
+#             allow_html=True,
+#             columnDefs=[
+#                 {
+#                     "targets": [1],
+#                     "render": itables.JavascriptCode("""
+#             function (data, type, row) {
+#                 if (type === 'display' && 'www') {
+#                     return '<a href="' + data + '" target="_blank">' + 'www' + '</a>';
+#                 }
+#                 return data;
+#             }
+#         """)
+#                 }
+#             ],
+#         )
