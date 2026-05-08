@@ -68,9 +68,9 @@ gb.configure_selection(
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
 gb.configure_column(field='product_name', header_name="Produkte von 'Compass'", filter=True, width=250, rowGroup=True, hide=True)
-gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.multi, aggFunc="sum", sort='desc', width=120)
-gb.configure_column(field='vollname_der_firma', header_name='Voller Name', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
-gb.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, minWidth=120, maxWidth=120)
+gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=True, aggFunc="sum", sort='desc', width=120)
+gb.configure_column(field='vollname_der_firma', header_name='Voller Name', filter=True, minWidth=200, maxWidth=500)
+gb.configure_column(field='uns_id', header_name='ID Uns', filter=True, minWidth=120, maxWidth=120)
 gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=True)
 gb.configure_column(
     "seite",
@@ -91,30 +91,30 @@ gb.configure_column(
         }
     """)
 )
-gb.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-gb.configure_column(field='rechnungsadr_land', header_name='Land', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='rechtsform', header_name='Rechtsform', filter=ag_grid.filters.multi)
-gb.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de2', header_name='ONACE L2', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
-gb.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100)
-gb.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=ag_grid.filters.multi, width=300)
+gb.configure_column(field='email', header_name='Email', filter=True, width=200)
+gb.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=True, width=150)
+gb.configure_column(field='rechnungsadr_land', header_name='Land', filter=True, width=200)
+gb.configure_column(field='rechnungsadr_bundesland', header_name='Bundesland', filter=True, width=200)
+gb.configure_column(field='rechnungsadr_plz_ort', header_name='Plz-Ort', filter=True, width=200)
+gb.configure_column(field='rechtsform', header_name='Rechtsform', filter=True)
+gb.configure_column(field='onace_sh_de1', header_name='ONACE L1', filter=True, width=200)
+gb.configure_column(field='onace_sh_de2', header_name='ONACE L2', filter=True, width=200)
+gb.configure_column(field='onace_sh_de3', header_name='ONACE L3', filter=True, width=200)
+gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=True, width=200)
+gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=True, width=200)
+gb.configure_column(field='onace_code5', header_name='ONACE', filter=True, width=100)
+gb.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=True, width=300)
 gb.configure_column(field='uns_mitg', header_name='Uns MG', filter=True, width=100)
-gb.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
-gb.configure_column(field='aktivitaten_id', header_name='Letzte Akt ID', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi)
-gb.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
-gb.configure_column(field='heaf', header_name='Heaf', filter=ag_grid.filters.multi, width=80)
-gb.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=ag_grid.filters.multi, width=120)
-gb.configure_column(field='rechnungsadr_full', header_name='Adresse', filter=ag_grid.filters.multi)
-gb.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi)
-gb.configure_column(field='registrierungsstatus', header_name='Status', filter=ag_grid.filters.multi, width=100)
-gb.configure_column(field='compass_id', header_name='ID Compass', filter=ag_grid.filters.multi, width=120)
+gb.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=True, width=130)
+gb.configure_column(field='aktivitaten_id', header_name='Letzte Akt ID', filter=True, width=120)
+gb.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=True)
+gb.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=True, width=130)
+gb.configure_column(field='heaf', header_name='Heaf', filter=True, width=80)
+gb.configure_column(field='hauptunternehmen_id', header_name='ID Haupt', filter=True, width=120)
+gb.configure_column(field='rechnungsadr_full', header_name='Adresse', filter=True)
+gb.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=True)
+gb.configure_column(field='registrierungsstatus', header_name='Status', filter=True, width=100)
+gb.configure_column(field='compass_id', header_name='ID Compass', filter=True, width=120)
 
 grid_options = gb.build()
 # grid_options["autoGroupColumnDef"]= {'cellRendererParams': {'checkbox': True }}
@@ -340,25 +340,25 @@ try:
                                          paginationPageSize=100)  # Add pagination
                 gb1.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
                 # gb1.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
-                gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=ag_grid.filters.multi,
+                gb1.configure_column(field='vorname', header_name='Vorname', pinned='left', filter=True,
                                      maxWidth=150)
-                gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=ag_grid.filters.multi,
+                gb1.configure_column(field='nachname', header_name='Nachname', pinned='left', filter=True,
                                      maxWidth=150)
-                gb1.configure_column(field='pers_id', header_name='ID Pers', filter=ag_grid.filters.multi, maxWidth=120)
-                gb1.configure_column(field='email', header_name='Email', filter=ag_grid.filters.multi, maxWidth=500)
-                gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=ag_grid.filters.multi, maxWidth=100)
-                gb1.configure_column(field='pers_position', header_name='Position', filter=ag_grid.filters.multi, maxWidth=150)
-                gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=ag_grid.filters.multi, width=150)
-                gb1.configure_column(field='pers_mitg', header_name='MG', filter=ag_grid.filters.multi, maxWidth=100)
+                gb1.configure_column(field='pers_id', header_name='ID Pers', filter=True, maxWidth=120)
+                gb1.configure_column(field='email', header_name='Email', filter=True, maxWidth=500)
+                gb1.configure_column(field='pers_kategorie', header_name='Kategorie', filter=True, maxWidth=100)
+                gb1.configure_column(field='pers_position', header_name='Position', filter=True, maxWidth=150)
+                gb1.configure_column(field='telefonnummer', header_name='Telefonnummer', filter=True, width=150)
+                gb1.configure_column(field='pers_mitg', header_name='MG', filter=True, maxWidth=100)
                 gb1.configure_column(field='pers_mitg_maxd', header_name='Letzte MG Data',
                                      type=["customDateTimeFormat"],
-                                     custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, maxWidth=120)
-                gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=ag_grid.filters.multi, width=120)
-                gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi, minWidth=200)
+                                     custom_format_string='yyyy-MM-dd', filter=True, maxWidth=120)
+                gb1.configure_column(field='aktivitaten_id', header_name='ID Akt', filter=True, width=120)
+                gb1.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=True, minWidth=200)
                 gb1.configure_column(field='akt_maxd', header_name='Letzte Akt Data', type=["customDateTimeFormat"],
-                                    custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
-                gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=ag_grid.filters.multi, width=300)
-                gb1.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, width=120)
+                                    custom_format_string='yyyy-MM-dd', filter=True, width=130)
+                gb1.configure_column(field='kurzbezeichnung', header_name='Gekürzter Name', filter=True, width=300)
+                gb1.configure_column(field='uns_id', header_name='ID Uns', filter=True, width=120)
 
                 grid_options1 = gb1.build()
                 grid_response1 = AgGrid(
@@ -388,7 +388,7 @@ try:
                 gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
                 gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
                 gb2.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
-                gb2.configure_column(field='datum_titel', header_name='Data | Titel', pinned='left', filter=ag_grid.filters.multi, width=250)
+                gb2.configure_column(field='datum_titel', header_name='Data | Titel', pinned='left', filter=True, width=250)
                 gb2.configure_column(field="agenda_link", headerName="Agenda link", width=100,
                                     cellRenderer=JsCode("""
                         class UrlCellRenderer {
@@ -405,12 +405,12 @@ try:
                         }
                     """)
                                     )
-                gb2.configure_column(field='format', header_name='Format', filter=ag_grid.filters.multi, width=100)
-                gb2.configure_column(field='bundesland', header_name='Place', filter=ag_grid.filters.multi, width=150)
-                gb2.configure_column(field='akt_org', header_name='Organizer', filter=ag_grid.filters.multi, width=300)
-                gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=ag_grid.filters.multi, width=300)
-                gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=ag_grid.filters.multi, width=120)
-                gb2.configure_column(field='adr_full', header_name='Adresse', filter=ag_grid.filters.multi, width=300)
+                gb2.configure_column(field='format', header_name='Format', filter=True, width=100)
+                gb2.configure_column(field='bundesland', header_name='Place', filter=True, width=150)
+                gb2.configure_column(field='akt_org', header_name='Organizer', filter=True, width=300)
+                gb2.configure_column(field='akt_spn', header_name='Sponsor', filter=True, width=300)
+                gb2.configure_column(field='aktivitaten_id', header_name='ID', filter=True, width=120)
+                gb2.configure_column(field='adr_full', header_name='Adresse', filter=True, width=300)
 
                 grid_options2 = gb2.build()
                 grid_response2 = AgGrid(
