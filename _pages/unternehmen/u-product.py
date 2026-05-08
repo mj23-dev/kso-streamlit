@@ -6,7 +6,7 @@ from datetime import datetime
 from utils.io import load_sql
 from st_aggrid import AgGrid, GridOptionsBuilder
 from st_aggrid.shared import JsCode
-from reflex_ag_grid import ag_grid
+# from reflex_ag_grid import ag_grid
 
 # === Підключення до бази ===
 conn = st.session_state.get("conn")
@@ -67,11 +67,11 @@ gb.configure_selection(
 # gb.configure_selection(selection_mode="single", use_checkbox=False) # Enable single selection (multiple)
 gb.configure_default_column(enablePivot=True, enableValue=True, enableRowGroup=True)
 
-gb.configure_column(field='product_name', header_name="Produkte von 'Compass'", filter=ag_grid.filters.multi, width=250, rowGroup=True, hide=True)
+gb.configure_column(field='product_name', header_name="Produkte von 'Compass'", filter=True, width=250, rowGroup=True, hide=True)
 gb.configure_column(field='cnt_uns', header_name='Cnt Uns', filter=ag_grid.filters.multi, aggFunc="sum", sort='desc', width=120)
 gb.configure_column(field='vollname_der_firma', header_name='Voller Name', filter=ag_grid.filters.multi, minWidth=200, maxWidth=500)
 gb.configure_column(field='uns_id', header_name='ID Uns', filter=ag_grid.filters.multi, minWidth=120, maxWidth=120)
-gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=ag_grid.filters.number)
+gb.configure_column(field='cnt_pers', header_name='Cnt Pers', filter=True)
 gb.configure_column(
     "seite",
     headerName="Link zur Website",
@@ -104,7 +104,7 @@ gb.configure_column(field='onace_sh_de4', header_name='ONACE L4', filter=ag_grid
 gb.configure_column(field='onace_sh_de5', header_name='ONACE L5', filter=ag_grid.filters.multi, width=200)
 gb.configure_column(field='onace_code5', header_name='ONACE', filter=ag_grid.filters.multi, width=100)
 gb.configure_column(field='tatigkeitsbeschreibung', header_name='Tatigkeitsbeschreibung', filter=ag_grid.filters.multi, width=300)
-gb.configure_column(field='uns_mitg', header_name='Uns MG', filter=ag_grid.filters.number, width=100)
+gb.configure_column(field='uns_mitg', header_name='Uns MG', filter=True, width=100)
 gb.configure_column(field='uns_mitg_maxd', header_name='Letzte MG Data', type=["customDateTimeFormat"], custom_format_string='yyyy-MM-dd', filter=ag_grid.filters.multi, width=130)
 gb.configure_column(field='aktivitaten_id', header_name='Letzte Akt ID', filter=ag_grid.filters.multi, width=120)
 gb.configure_column(field='akt_titel', header_name='Letzte Akt Titel', filter=ag_grid.filters.multi)
