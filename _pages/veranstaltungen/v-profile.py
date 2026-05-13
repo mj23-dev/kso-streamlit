@@ -322,7 +322,7 @@ if len(selected_df) > 0:
             gb2.configure_pagination(enabled=True, paginationAutoPageSize=False, paginationPageSize=100)  # Add pagination
             gb2.configure_side_bar(filters_panel=True, columns_panel=True, defaultToolPanel='filters')  # Add a sidebar
             # gb2.configure_selection(selection_mode="single", use_checkbox=True)  # Enable single selection (multiple)
-            gb2.configure_column(field='vollname_der_firma', header_name='Vollname der firma', pinned='left', filter=ag_grid.filters.text, minWidth=400, maxWidth=400)
+            gb2.configure_column(field='vollname_der_firma', header_name='Vollname der firma', pinned='left', filter=True, minWidth=400, maxWidth=400)
             gb2.configure_column(
                 "seite",
                 headerName="Link zur Website",
