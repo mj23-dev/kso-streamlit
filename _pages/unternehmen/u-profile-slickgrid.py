@@ -15,6 +15,7 @@ from streamlit_slickgrid import (
     ExportServices,
     StreamlitSlickGridFormatters,
     StreamlitSlickGridSorters,
+
 )
 
 # ✅ SlickGrid замість st_aggrid
@@ -74,7 +75,7 @@ columns = [
             {"id": "vollname_der_firma", "name": "Voller Name", "field": "vollname_der_firma", "sortable": True, "filterable": True, "minWidth": 450},
             {"id": "uns_id", "name": "ID", "field": "uns_id", "sortable": True, "filterable": True, "minWidth": 150},
             {"id": "cnt_pers", "name": "Cnt Pers", "field": "cnt_pers", "type": FieldType.number, "sortable": True, "filterable": True, "minWidth": 50},
-            {"id": "seite", "name": "Link zur Website", "field": "seite", "sortable": True, "filterable": True, "minWidth": 200},
+            {"id": "seite", "name": "Link zur Website", "field": "seite", "sortable": True, "filterable": True, "minWidth": 200, "formatter": Formatters.hyperlink},
             {"id": "email", "name": "Email", "field": "email", "sortable": True, "filterable": True, "minWidth": 200},
             {"id": "telefonnummer", "name": "Telefonnummer", "field": "telefonnummer", "sortable": True, "filterable": True, "minWidth": 200},
             {"id": "rechnungsadr_land", "name": "Land", "field": "rechnungsadr_land", "sortable": True, "filterable": True, "minWidth": 200},
@@ -623,14 +624,14 @@ if out is not None:
                 {"id": "datum_titel", "name": "Datum | Titel", "field": "datum_titel", "sortable": True, "filterable": True,
                  "minWidth": 200},
                 {"id": "agenda_link", "name": "Agenda link", "field": "agenda_link", "sortable": True, "filterable": True,
-                 "minWidth": 300},
+                 "minWidth": 100, "formatter": Formatters.hyperlink},
                 {"id": "format", "name": "Format", "field": "format", "sortable": True, "filterable": True, "minWidth": 75},
                 {"id": "bundesland", "name": "Place", "field": "bundesland", "sortable": True, "filterable": True,
-                 "minWidth": 100},
+                 "minWidth": 75},
                 {"id": "akt_org", "name": "Organizer", "field": "akt_org", "sortable": True, "filterable": True,
-                 "minWidth": 100},
+                 "minWidth": 200},
                 {"id": "akt_spn", "name": "Sponsor", "field": "akt_spn", "sortable": True, "filterable": True,
-                 "minWidth": 100},
+                 "minWidth": 200},
                 {"id": "id", "name": "ID", "field": "id", "sortable": True, "filterable": True, "minWidth": 75},
                 {"id": "adr_full", "name": "Adress", "field": "adr_full", "sortable": True, "filterable": True,
                  "minWidth": 100},
