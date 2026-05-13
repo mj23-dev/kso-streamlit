@@ -14,6 +14,7 @@ pages = {
         # st.Page("_pages/unternehmen/unternehmen01.py", title="📁 Unternehmen v1"),
         st.Page("_pages/unternehmen/u-profile.py", title="📰 Profile"),
         st.Page("_pages/unternehmen/u-profile-itables.py", title="📰 Profile-test"),
+        st.Page("_pages/unternehmen/u-profile-slickgrid.py", title="📰 Profile-test2"),
         # st.Page("_pages/unternehmen/u-profile-details.py", title="📰 Profile2"),
         st.Page("_pages/unternehmen/u-member.py", title="💰 Mitglieder"),
         st.Page("_pages/unternehmen/u-onace.py", title="🎯 ÖNACE"),
