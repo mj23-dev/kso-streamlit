@@ -1,4 +1,4 @@
-select wp.vorname, wp.nachname, wp.pers_id, wp.pers_mitg, wp.pers_mitg_maxd,
+select wp.vorname, wp.nachname, wp.pers_id as id, wp.pers_mitg, wp.pers_mitg_maxd,
 	wp.anrede, wp.titel_vorne, wp.titel_hinten, 
 	coalesce(wp.domain1, wp.domain2, wp.domain3, wp.domain4, wp.domain5, wp.domain6, wp.domain7, wp.domain8, '-') as domain,
 	wp.telefonnummer, wp.geburtsdatum, wp.sprachen,

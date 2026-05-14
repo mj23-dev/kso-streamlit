@@ -22,7 +22,8 @@ pages = {
     ],
     "🧑🏻‍💼Personen": [
         st.Page("_pages/personen/p-profile.py", title="📰 Profile"),
-        st.Page("_pages/personen/p-profile-itables.py", title="📰 Profile-test"),
+        # st.Page("_pages/personen/p-profile-itables.py", title="📰 Profile-test"),
+        st.Page("_pages/personen/p-profile-slickgrid.py", title="📰 Profile-test"),
         st.Page("_pages/personen/p-member.py", title="💰 Mitglieder"),
     ],
     "📅 Veranstaltungen": [

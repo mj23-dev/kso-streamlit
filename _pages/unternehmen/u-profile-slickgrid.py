@@ -14,8 +14,20 @@ from streamlit_slickgrid import (
     OperatorType,
     ExportServices,
     StreamlitSlickGridFormatters,
-    StreamlitSlickGridSorters,
+    StreamlitSlickGridSorters,)
 
+# Inject custom CSS to target the dialog container
+st.markdown(
+    """
+    <style>
+    div[data-testid="stDialog"] div[role="dialog"] {
+        width: 80vw;
+        height: 50vw;
+        max-width: 80vw;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 # ✅ SlickGrid замість st_aggrid
@@ -294,7 +306,6 @@ if out is not None:
 
             return df1, df2
 
-
         st.markdown("🔸**Other details:**")
 
         # ✅ БЕЗ spinner + sleep
@@ -496,7 +507,6 @@ if out is not None:
         #         # key=st.session_state["profile_det2_key"],
         #         # on_click="rerun"
         #     )
-
 
         with st.expander(f"👥 **Personen** ({len(df1)})", expanded=True if len(df1) != 0 else False):
 
@@ -711,3 +721,4 @@ if out is not None:
                 # key=st.session_state["profile_det2_key"],
                 # on_click="rerun"
             )
+

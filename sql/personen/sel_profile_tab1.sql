@@ -7,7 +7,7 @@ SELECT wu.vollname_der_firma, wlup.pers_position, wu.uns_id,
         wu.product_name_agg, wu.tatigkeitsbeschreibung,
         wu.uns_mitg, wu.uns_mitg_maxd, wu.aktivitaten_id, wu.akt_titel, wu.akt_maxd,
         wu.heaf, wu.hauptunternehmen_id, wu.kurzbezeichnung, wu.rechnungsadr_full, wu.registrierungsstatus, wu.compass_id,
-        wp.pers_id
+        wp.pers_id, rowid as id
 FROM main.w_pers wp
 INNER join main.w_links_uns_pers wlup on wlup.pers_id = wp.pers_id
 INNER join main.w_uns wu on wu.uns_id = wlup.uns_id
