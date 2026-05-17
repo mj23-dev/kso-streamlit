@@ -31,7 +31,7 @@ st.markdown(
 )
 
 # ✅ SlickGrid замість st_aggrid
-st.set_page_config(page_title="KSO - Unternehmen Profile", layout="wide")
+# st.set_page_config(page_title="KSO - Unternehmen Profile", layout="wide")
 
 title = 'unternehmen'
 st.subheader("🏢 Unternehmen (Сompanies)")

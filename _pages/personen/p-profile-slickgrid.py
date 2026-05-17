@@ -250,7 +250,7 @@ if out is not None:
 
             query2 = f"""
                         SELECT distinct wv.*
-                          from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link,
+                          from (select wv.datum_titel, wv.agenda_link,
                                         wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
                                         wv.adr_full, wv.aktivitaten_id as id
                                     from main.w_veranstaltung wv
