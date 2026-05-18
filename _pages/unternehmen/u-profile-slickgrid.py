@@ -58,7 +58,7 @@ for col in df.select_dtypes(include=['datetime']):
 data = df.to_dict('records')  # ✅ SlickGrid формат
 data = add_tree_info(
     data,
-    tree_fields=["vollname_der_firma", "uns_id", "cnt_pers", "seite", "email", "telefonnummer", "rechnungsadr_land", "rechnungsadr_bundesland", "rechnungsadr_plz_ort", "rechtsform", "onace_code5", "onace_sh_de1", "onace_sh_de2", "onace_sh_de3", "onace_sh_de4", "onace_sh_de5", "product_name_agg", "tatigkeitsbeschreibung", "uns_mitg", "uns_mitg_maxd", "aktivitaten_id", "akt_titel", "akt_maxd", "heaf", "hauptunternehmen_id", "kurzbezeichnung", "rechnungsadr_full", "registrierungsstatus", "compass_id"],
+    tree_fields=["vollname_der_firma", "kurzbezeichnung", "uns_id", "cnt_pers", "seite", "email", "telefonnummer", "rechnungsadr_land", "rechnungsadr_bundesland", "rechnungsadr_plz_ort", "rechtsform", "onace_code5", "onace_sh_de1", "onace_sh_de2", "onace_sh_de3", "onace_sh_de4", "onace_sh_de5", "product_name_agg", "tatigkeitsbeschreibung", "uns_mitg", "uns_mitg_maxd", "aktivitaten_id", "akt_titel", "akt_maxd", "heaf", "hauptunternehmen_id", "rechnungsadr_full", "registrierungsstatus", "compass_id"],
     join_fields_as="title",
     id_field="id",)
 
@@ -85,6 +85,7 @@ with col_left:
 columns = [
             # {"id": "vollname_der_firma", "name": "Voller Name", "field": "vollname_der_firma", "sortable": True, "filterable": True, "formatter": Formatters.tree, "exportCustomFormatter": Formatters.treeExport, "minWidth": 450},
             {"id": "vollname_der_firma", "name": "Voller Name", "field": "vollname_der_firma", "sortable": True, "filterable": True, "minWidth": 450},
+            {"id": "kurzbezeichnung", "name": "Gekürzter Name", "field": "kurzbezeichnung", "sortable": True, "filterable": True, "minWidth": 200},
             {"id": "uns_id", "name": "ID", "field": "uns_id", "sortable": True, "filterable": True, "minWidth": 150},
             {"id": "cnt_pers", "name": "Cnt Pers", "field": "cnt_pers", "type": FieldType.number, "sortable": True, "filterable": True, "minWidth": 50},
             {"id": "seite", "name": "Link zur Website", "field": "seite", "sortable": True, "filterable": True, "minWidth": 200, "formatter": Formatters.hyperlink},
@@ -109,7 +110,6 @@ columns = [
             {"id": "akt_maxd", "name": "Letzte Akt Data", "field": "akt_maxd", "sortable": True, "filterable": True, "minWidth": 100},
             {"id": "heaf", "name": "Heaf", "field": "heaf", "sortable": True, "filterable": True, "minWidth": 50},
             {"id": "hauptunternehmen_id", "name": "ID Haupt", "field": "hauptunternehmen_id", "sortable": True, "filterable": True, "minWidth": 120},
-            {"id": "kurzbezeichnung", "name": "Gekürzter Name", "field": "kurzbezeichnung", "sortable": True, "filterable": True, "minWidth": 200},
             {"id": "rechnungsadr_full", "name": "Adresse", "field": "rechnungsadr_full", "sortable": True, "filterable": True, "minWidth": 200},
             {"id": "registrierungsstatus", "name": "Status", "field": "registrierungsstatus", "sortable": True, "filterable": True, "minWidth": 100},
             {"id": "compass_id", "name": "ID Compass", "field": "compass_id", "sortable": True, "filterable": True, "type": FieldType.number, "minWidth": 100},
@@ -291,7 +291,7 @@ if out is not None:
 
             query2 = f"""
                         SELECT distinct wv.*
-                          from (select wv.datum_titel, case when wv.agenda_link = '-' then null else wv.agenda_link end as agenda_link,
+                          from (select wv.datum_titel, wv.agenda_link,
                                         wv.format, coalesce(wv.bundesland,'-') as bundesland, wv.akt_org, wv.akt_spn,
                                         wv.adr_full, wv.aktivitaten_id as id
                                     from main.w_veranstaltung wv
