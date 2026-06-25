@@ -71,17 +71,6 @@ cnt_filtered = cnt_full
 
 # st.subheader(f"**Unternehmen** ({cnt_full})")
 
-# ✅ UI Controls (без змін)
-# col_left, col_center1, col_right = st.columns([0.55, 0.15, 0.25])
-col_left, col_center1, col_right = st.columns([1,0.01,0.01])
-with col_left:
-    st.markdown("**👆 Klicken Sie auf den Eintrag, um Details anzuzeigen**")
-# with col_center1:
-#     if st.button("🔄 Reset filters", use_container_width=True):
-#         st.session_state["reload_grid"] = True
-#         st.session_state["reset_grid_key"] = f"grid_{datetime.now().timestamp()}"
-#         st.rerun()
-
 columns = [
             # {"id": "vollname_der_firma", "name": "Voller Name", "field": "vollname_der_firma", "sortable": True, "filterable": True, "formatter": Formatters.tree, "exportCustomFormatter": Formatters.treeExport, "minWidth": 450},
             {"id": "vollname_der_firma", "name": "Voller Name", "field": "vollname_der_firma", "sortable": True, "filterable": True, "minWidth": 450},
@@ -128,6 +117,8 @@ options={
     # Set up export options.
     "enableTextExport": True,
     "enableExcelExport": True,
+    "enableGridMenu": True, 
+    "explicitInitialization": True,
     "excelExportOptions": {"sanitizeDataExport": True},
     "textExportOptions": {"sanitizeDataExport": True},
     "externalResources": [
@@ -177,6 +168,97 @@ options={
     "enableCellNavigation": True,  # True allows cell selection visualization (enableRowSelection must be False)
 }
 
+# ✅ UI Controls (без змін)
+# col_left, col_center1, col_right = st.columns([0.55, 0.15, 0.25])
+col_left, col_center1, col_right = st.columns([1,0.01,0.01])
+with col_left:
+    st.markdown("**👆 Klicken Sie auf den Eintrag, um Details anzuzeigen**")
+# with col_center1:
+#     if st.button("🔄 Reset filters", use_container_width=True):
+#         st.session_state["reload_grid"] = True
+#         st.session_state["reset_grid_key"] = f"grid_{datetime.now().timestamp()}"
+#         st.rerun()
+# === 5. Експорт
+# with col_right:
+#     with st.popover("⬇️ Export XLS", use_container_width=True):
+#         col_left_exp, col_right_exp = st.columns([0.5,0.5])
+#         with col_left_exp:
+#             if st.button("🔄 Uns", use_container_width=True):
+#                 file_exp1 = f"u-profile_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+#                 towrite = io.BytesIO()
+#                 filtered_df.to_excel(towrite, index=False, engine='openpyxl')
+#                 towrite.seek(0)
+#                 data1 = towrite.read()
+#                 b64 = base64.b64encode(data1).decode()
+#                 st.session_state['excel_file_name1'] = file_exp1
+#                 st.session_state['excel_file_data1'] = b64
+#
+#             if 'excel_file_name1' in st.session_state and 'excel_file_data1' in st.session_state:
+#                 # Генеруємо HTML-кнопку з JS, яка ховається після кліку
+#                 download_html1 = f"""
+#                 <html>
+#                 <head>
+#                 <script>
+#                 function hideButton() {{
+#                     var btn = document.getElementById('download-btn1');
+#                     btn.style.display = 'none';
+#                 }}
+#                 </script>
+#                 </head>
+#                 <body>
+#                 <a id="download-btn1" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data1']}"
+#                    download="{file_exp1}"
+#                    onclick="hideButton()"
+#                    style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
+#                    ⬇️ Download
+#                 </a>
+#                 </body>
+#                 </html>
+#                 """
+#                 components.html(download_html1, height=50, width=190)
+#                 if 'excel_file_name1' in st.session_state:
+#                     del st.session_state['excel_file_name1']
+#         with col_right_exp:
+#             file_exp2 = f"u-profile_pers_" + datetime.now().strftime('%Y-%m-%d_%H%M%S') + ".xlsx"
+#             if st.button("🔄 Uns+Pers", use_container_width=True):
+#                 merged_df = pd.merge(filtered_df, df_pers, on='uns_id', how='left')
+#                 insert_after_column = 'compass_id'  # додаємо нову колонку після
+#                 col_index = merged_df.columns.get_loc(insert_after_column)
+#                 merged_df.insert(col_index + 1, 'dtype', 'PersLinked ->')
+#                 towrite = io.BytesIO()
+#                 merged_df.to_excel(towrite, index=False, engine='openpyxl')
+#                 towrite.seek(0)
+#                 data2 = towrite.read()
+#                 b64 = base64.b64encode(data2).decode()
+#                 st.session_state['excel_file_name2'] = file_exp2
+#                 st.session_state['excel_file_data2'] = b64
+#             if 'excel_file_name2' in st.session_state and 'excel_file_data2' in st.session_state:
+#                 # Генеруємо HTML-кнопку з JS, яка ховається після кліку
+#                 download_html2 = f"""
+#                     <html>
+#                     <head>
+#                     <script>
+#                     function hideButton() {{
+#                         var btn = document.getElementById('download-btn2');
+#                         btn.style.display = 'none';
+#                     }}
+#                     </script>
+#                     </head>
+#                     <body>
+#                     <a id="download-btn2" href="data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,{st.session_state['excel_file_data2']}"
+#                        download="{file_exp2}"
+#                        onclick="hideButton()"
+#                        style="display: inline-block; padding: 8px 12px; background-color: #e7e7e7; color: black; text-decoration: none; border-radius: 5px; font-family: sans-serif; font-size:14px; ">
+#                        ⬇️ Download
+#                     </a>
+#                     </body>
+#                     </html>
+#                     """
+#                 components.html(download_html2, height=50, width=190)
+#                 if 'excel_file_name2' in st.session_state:
+#                     del st.session_state['excel_file_name2']
+#
+
 # ✅ Callback для вибору рядка
 def on_row_selected(event):
     """Callback при виборі рядка"""
@@ -188,14 +270,23 @@ def on_row_selected(event):
         st.success(f"✅ Вибрано: {selected_row.get('vollname_der_firma', 'N/A')}")
 
 # ✅ SlickGrid (замість AgGrid)
-with col_left:
-    out = slickgrid(
-        data,  # ✅ list of dicts
-        columns,
-        options,
-        key=st.session_state["reset_grid_key"],
-        on_click = "rerun"
-    )
+# with col_left:
+out = slickgrid(
+    data,  # ✅ list of dicts
+    columns,
+    options,
+    key=st.session_state["reset_grid_key"],
+    on_click = "rerun"
+)
+
+
+# if out:
+#     print(out)
+#     filtered_df = pd.DataFrame(out)
+#     cnt_filtered = len(filtered_df)
+#     print(cnt_filtered)
+# else:
+#     print('error')
 
 
 @st.dialog("Details", width="large")
